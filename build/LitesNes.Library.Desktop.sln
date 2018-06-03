@@ -16,6 +16,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{06221fd8-9e5b-4f39-80d2-e493fcdffcfc}*SharedItemsImports = 4
+		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{4425a150-d05a-4d99-8778-c448483bb554}*SharedItemsImports = 9
 		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{bae7c6ba-28b2-485c-a7a5-4bfd9ff382ff}*SharedItemsImports = 4
 		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{d56d7b19-3979-4d4b-b1e4-75c74b2475af}*SharedItemsImports = 4
 	EndGlobalSection
