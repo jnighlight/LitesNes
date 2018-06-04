@@ -8,7 +8,4 @@
     <ClCompile Include="unittest1.cpp" />
     <ClCompile Include="pch.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>
