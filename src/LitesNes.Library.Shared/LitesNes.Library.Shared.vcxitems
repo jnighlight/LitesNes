@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)imconfig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)imgui_impl_glfw_gl3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_internal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IncludeClass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_rect_pack.h" />
@@ -30,6 +31,7 @@
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui_draw.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IncludeClass.cpp" />
   </ItemGroup>
 </Project>
