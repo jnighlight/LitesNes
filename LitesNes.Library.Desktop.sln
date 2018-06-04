@@ -3,22 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Desktop", "LitesNes.Library.Desktop\LitesNes.Library.Desktop.vcxproj", "{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Shared", "LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems", "{4425A150-D05A-4D99-8778-C448483BB554}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{EE7B280F-DEF6-42E2-B1B9-844017B6A27C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Test", "..\src\LitesNes.Library.Test\LitesNes.Library.Test.vcxproj", "{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Test", "LitesNes.Library.Test\LitesNes.Library.Test.vcxproj", "{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Shared", "..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems", "{4425A150-D05A-4D99-8778-C448483BB554}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Library.Desktop", "..\src\LitesNes.Library.Desktop\LitesNes.Library.Desktop.vcxproj", "{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Application", "..\src\LitesNes.Application\LitesNes.Application.vcxproj", "{06221FD8-9E5B-4F39-80D2-E493FCDFFCFC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LitesNes.Application", "LitesNes.Application\LitesNes.Application.vcxproj", "{06221FD8-9E5B-4F39-80D2-E493FCDFFCFC}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{06221fd8-9e5b-4f39-80d2-e493fcdffcfc}*SharedItemsImports = 4
-		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{4425a150-d05a-4d99-8778-c448483bb554}*SharedItemsImports = 9
-		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{bae7c6ba-28b2-485c-a7a5-4bfd9ff382ff}*SharedItemsImports = 4
-		..\src\LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{d56d7b19-3979-4d4b-b1e4-75c74b2475af}*SharedItemsImports = 4
+		LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{06221fd8-9e5b-4f39-80d2-e493fcdffcfc}*SharedItemsImports = 4
+		LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{4425a150-d05a-4d99-8778-c448483bb554}*SharedItemsImports = 9
+		LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{bae7c6ba-28b2-485c-a7a5-4bfd9ff382ff}*SharedItemsImports = 4
+		LitesNes.Library.Shared\LitesNes.Library.Shared.vcxitems*{d56d7b19-3979-4d4b-b1e4-75c74b2475af}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,14 +27,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x64.ActiveCfg = Debug|x64
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x64.Build.0 = Debug|x64
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x86.ActiveCfg = Debug|Win32
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x86.Build.0 = Debug|Win32
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x64.ActiveCfg = Release|x64
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x64.Build.0 = Release|x64
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x86.ActiveCfg = Release|Win32
-		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x86.Build.0 = Release|Win32
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Debug|x64.ActiveCfg = Debug|x64
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Debug|x64.Build.0 = Debug|x64
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Debug|x86.ActiveCfg = Debug|Win32
@@ -43,6 +35,14 @@ Global
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Release|x64.Build.0 = Release|x64
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Release|x86.ActiveCfg = Release|Win32
 		{BAE7C6BA-28B2-485C-A7A5-4BFD9FF382FF}.Release|x86.Build.0 = Release|Win32
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x64.ActiveCfg = Debug|x64
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x64.Build.0 = Debug|x64
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x86.ActiveCfg = Debug|Win32
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Debug|x86.Build.0 = Debug|Win32
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x64.ActiveCfg = Release|x64
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x64.Build.0 = Release|x64
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x86.ActiveCfg = Release|Win32
+		{D56D7B19-3979-4D4B-B1E4-75C74B2475AF}.Release|x86.Build.0 = Release|Win32
 		{06221FD8-9E5B-4F39-80D2-E493FCDFFCFC}.Debug|x64.ActiveCfg = Debug|x64
 		{06221FD8-9E5B-4F39-80D2-E493FCDFFCFC}.Debug|x64.Build.0 = Debug|x64
 		{06221FD8-9E5B-4F39-80D2-E493FCDFFCFC}.Debug|x86.ActiveCfg = Debug|Win32
