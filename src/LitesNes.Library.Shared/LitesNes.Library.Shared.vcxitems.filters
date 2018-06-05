@@ -28,6 +28,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_impl_dx11.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -43,5 +44,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui_impl_dx11.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
   </ItemGroup>
 </Project>

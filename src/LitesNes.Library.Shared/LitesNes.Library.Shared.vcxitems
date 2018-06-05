@@ -19,6 +19,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_impl_dx11.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_internal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IncludeClass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_rect_pack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_textedit.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_truetype.h" />
@@ -36,5 +37,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IncludeClass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
   </ItemGroup>
 </Project>
