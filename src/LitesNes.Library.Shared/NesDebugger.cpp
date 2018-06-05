@@ -11,7 +11,73 @@ NesDebugger::~NesDebugger()
 {
 }
 
-void NesDebugger::Render()
+void NesDebugger::Update()
+{
+	if (mRunning) {
+		IncrementActiveInstruction();
+		mStepped = true;
+		if (mInstructionList[mActiveInstruction].mIsBreakpoint)
+		{
+			mRunning = false;
+		}
+		mAReg++;
+		PopulateCharBufferWithHex(mARegBuf, mAReg);
+		mXReg++;
+		PopulateCharBufferWithHex(mXRegBuf, mXReg);
+		mYReg++;
+		PopulateCharBufferWithHex(mYRegBuf, mYReg);
+		mPCReg++;
+		PopulateCharBufferWithHex(mPCRegBuf, mPCReg);
+	}
+}
+
+void NesDebugger::IncrementActiveInstruction()
+{
+	mActiveInstruction++;
+	if (mActiveInstruction >= mInstructionList.size())
+	{
+		mActiveInstruction = 0;
+	}
+	mAReg++;
+	PopulateCharBufferWithHex(mARegBuf, mAReg);
+	mXReg++;
+	PopulateCharBufferWithHex(mXRegBuf, mXReg);
+	mYReg++;
+	PopulateCharBufferWithHex(mYRegBuf, mYReg);
+	mPCReg++;
+	PopulateCharBufferWithHex(mPCRegBuf, mPCReg);
+}
+
+//Assumes char* buf is of at LEAST length 5. 
+void NesDebugger::PopulateCharBufferWithHex(char* buf, uint16_t byteData)
+{
+	uint8_t lowerBytes = ((byteData << 8) >> 8);
+	uint8_t higherBytes = (byteData >> 8);
+	unsigned char firstNibbleLower = (lowerBytes >> 4);
+	unsigned char secondNibbleLower = (lowerBytes & 0x0F);
+	unsigned char firstNibbleHigher = (higherBytes >> 4);
+	unsigned char secondNibbleHigher = (higherBytes & 0x0F);
+	buf[0] = NibbleToChar(firstNibbleHigher);
+	buf[1] = NibbleToChar(secondNibbleHigher);
+	buf[2] = NibbleToChar(firstNibbleLower);
+	buf[3] = NibbleToChar(secondNibbleLower);
+	buf[4] = '\00';
+}
+
+char NesDebugger::NibbleToChar(unsigned char nybble)
+{
+	if(nybble<10U)
+	{
+		 return (char)('0'+nybble);
+	}
+	else
+	{
+		 nybble-=10U;
+		 return (char)('A'+nybble);
+	}
+}
+
+void NesDebugger::RenderDebugger()
 {
 	ImGui::Begin("LitesNesDebugger");
     bool show_demo_window = true;
@@ -19,40 +85,26 @@ void NesDebugger::Render()
 
 	static float f = 0.0f;
 	static int counter = 0;
-	bool steppedThisFrame = false;
 	if (ImGui::Button("Run"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
 	{
-		mActiveInstruction++;
-		if (mActiveInstruction >= mInstructionList.size())
-		{
-			mActiveInstruction = 0;
-		}
-		steppedThisFrame = true;
+		mRunning = true;
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Step"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
+	if (ImGui::Button("Step"))
 	{
-		mActiveInstruction++;
-		if (mActiveInstruction >= mInstructionList.size())
-		{
-			mActiveInstruction = 0;
-		}
-		steppedThisFrame = true;
+		IncrementActiveInstruction();
+		mStepped = true;
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Step Into"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
+	if (ImGui::Button("Step Into"))
 	{
-		mActiveInstruction++;
-		if (mActiveInstruction >= mInstructionList.size())
-		{
-			mActiveInstruction = 0;
-		}
-		steppedThisFrame = true;
+		IncrementActiveInstruction();
+		mStepped = true;
 	}
 	ImGui::Text("A");
 	ImGui::SameLine();
 	ImGui::PushItemWidth(40);
-	ImGui::InputText("##A", mARegBuf, 8, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+	ImGui::InputText("##A", mARegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
 	ImGui::PopItemWidth();
 	ImGui::SameLine();
 	ImGui::Text("     ");
@@ -77,13 +129,13 @@ void NesDebugger::Render()
 	ImGui::Text("X");
 	ImGui::SameLine();
 	ImGui::PushItemWidth(40);
-	ImGui::InputText("##X", mXRegBuf, 8, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+	ImGui::InputText("##X", mXRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
 	ImGui::PopItemWidth();
 	ImGui::SameLine();
 	ImGui::Text("Y");
 	ImGui::SameLine();
 	ImGui::PushItemWidth(40);
-	ImGui::InputText("##Y", mYRegBuf, 8, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+	ImGui::InputText("##Y", mYRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
 	ImGui::PopItemWidth();
 	ImGui::SameLine();
 	ImGui::Text("        ");
@@ -91,50 +143,12 @@ void NesDebugger::Render()
 	ImGui::Text("PC");
 	ImGui::SameLine();
 	ImGui::PushItemWidth(40);
-	ImGui::InputText("##PC", mPCRegBuf, 8, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+	ImGui::InputText("##PC", mPCRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
 	ImGui::PopItemWidth();
 
-	//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-	/*
-	static bool test_read_only = false;
-	static char test_text[1024*16] =
-		"/*\n"
-		" The Pentium F00F bug, shorthand for F0 0F C7 C8,\n"
-		" the hexadecimal encoding of one offending instruction,\n"
-		" more formally, the invalid operand with locked CMPXCHG8B\n"
-		" instruction bug, is a design flaw in the majority of\n"
-		" Intel Pentium, Pentium MMX, and Pentium OverDrive\n"
-		" processors (all in the P5 microarchitecture).\n"
-		"\n\n"
-		"label:\n"
-		"\tlock cmpxchg8b eax\n";
-	static bool titlebool = true;
-	static bool scrollbool = false;*/
+
 	ImVec2 size(50, 20);
-	/*
-	ImGui::BeginGroup();
-	{
-		ImGui::BeginGroup();
-		ImGui::Button("AAA", size);
-		ImGui::Button("BBB", size);
-		ImGui::BeginGroup();
-		ImGui::Button("CCC", size);
-		ImGui::Button("DDD", size);
-		ImGui::EndGroup();
-		//ImGui::SameLine();
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::Button("EEE", size);
-		ImGui::EndGroup();
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("First group hovered");
-	}
-	ImGui::SameLine();*/
 	ImVec2 totalListSize = size;
 	totalListSize.x += totalListSize.x * 7;
 	totalListSize.y *= 15;
@@ -142,7 +156,7 @@ void NesDebugger::Render()
 	size.y /= 1.5;
 	if (ImGui::ListBoxHeader("##Instructions", totalListSize))
 	{
-		for (uint32_t i = 0; i < mInstructionList.size(); ++i) {
+		for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
 			std::string outString;
 			outString.reserve(20);
 			if (mInstructionList[i].mIsBreakpoint) {
@@ -150,23 +164,44 @@ void NesDebugger::Render()
 			} else {
 				outString.append("  ");
 			}
-			outString.append(mInstructionList[i].mMemoryLocation);
+			outString.append(mInstructionList[i].mMemoryLocationBuf);
 			outString.append("\t");
 			outString.append(mInstructionList[i].mName);
 			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction, 0, size))
 			{
 				mInstructionList[i].mIsBreakpoint = !mInstructionList[i].mIsBreakpoint;
 			}
-			if (steppedThisFrame && i == mActiveInstruction) {
+			if (mStepped && i == mActiveInstruction) {
 				ImGui::SetScrollHere(0.25f); // 0.0f:top, 0.5f:center, 1.0f:bottom
 			}
 		}
 	}
 	ImGui::ListBoxFooter();
 	ImGui::End();
-	/*
-	ImGui::Checkbox("No titlebar", &titlebool); ImGui::SameLine(150,0);
-	ImGui::Checkbox("No scrollbar", &scrollbool); ImGui::SameLine(150,100);
-	ImGui::InputTextMultiline("##source", test_text, IM_ARRAYSIZE(test_text), ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16), ImGuiInputTextFlags_AllowTabInput | (test_read_only ? ImGuiInputTextFlags_ReadOnly : 0));
-	ImGui::EndGroup();*/
+}
+
+void NesDebugger::RenderMemoryWindow()
+{
+	ImGui::Begin("LitesNesMemory");
+
+	ImGui::BeginGroup();
+	for (int line = 0; line < 100; line++)
+	{
+		ImGui::Text("RAM %04d", line * 10);
+		ImGui::SameLine();
+		ImGui::Text("\t");
+		for (uint32_t i = 0; i < 16; ++i) {
+			ImGui::SameLine();
+			ImGui::Text("00");
+		}
+		ImGui::SameLine();
+		ImGui::Text("\t");
+		for (uint32_t i = 0; i < 16; ++i) {
+			ImGui::SameLine();
+			ImGui::Text(".");
+		}
+	}
+	ImGui::EndGroup();
+
+	ImGui::End();
 }

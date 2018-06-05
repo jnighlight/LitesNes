@@ -14,7 +14,7 @@ public:
 		uint16_t mMemoryLocation = 0;
 		bool mSelected = false;
 		bool mIsBreakpoint = false;
-		NesInstruction(uint32_t memLoc)
+		NesInstruction(uint16_t memLoc)
 			:mMemoryLocation(memLoc)
 		{
 			UpdateMemoryLocationBuffer();
@@ -30,11 +30,17 @@ public:
 
 	NesDebugger();
 	~NesDebugger();
-	void Render();
+	void RenderDebugger();
+	void RenderMemoryWindow();
+	void Update();
+	static void PopulateCharBufferWithHex(char* buf, uint16_t byteData);
 	
 	std::vector<NesInstruction> mInstructionList;
 	uint32_t mActiveInstruction = 0;
 private:
+	void IncrementActiveInstruction();
+	static char NibbleToChar(unsigned char nybble);
+
 	char mARegBuf[8] = "";
 	uint16_t mAReg = 0;
 
@@ -46,5 +52,9 @@ private:
 
 	char mPCRegBuf[8] = "";
 	uint16_t mPCReg = 0;
+
+	bool mRunning = false;
+	bool mShouldStep = false;
+	bool mStepped = false;
 };
 
