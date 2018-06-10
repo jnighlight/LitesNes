@@ -20,14 +20,10 @@ void NesDebugger::Update()
 		{
 			mRunning = false;
 		}
-		mAReg++;
-		PopulateCharBufferWithHex(mARegBuf, mAReg);
-		mXReg++;
-		PopulateCharBufferWithHex(mXRegBuf, mXReg);
-		mYReg++;
-		PopulateCharBufferWithHex(mYRegBuf, mYReg);
-		mPCReg++;
-		PopulateCharBufferWithHex(mPCRegBuf, mPCReg);
+		mAReg.Add(1);
+		mXReg.Add(1);
+		mYReg.Add(1);
+		mPCReg.Add(1);
 	}
 }
 
@@ -38,14 +34,10 @@ void NesDebugger::IncrementActiveInstruction()
 	{
 		mActiveInstruction = 0;
 	}
-	mAReg++;
-	PopulateCharBufferWithHex(mARegBuf, mAReg);
-	mXReg++;
-	PopulateCharBufferWithHex(mXRegBuf, mXReg);
-	mYReg++;
-	PopulateCharBufferWithHex(mYRegBuf, mYReg);
-	mPCReg++;
-	PopulateCharBufferWithHex(mPCRegBuf, mPCReg);
+	mAReg.Add(1);
+	mXReg.Add(1);
+	mYReg.Add(1);
+	mPCReg.Add(1);
 }
 
 //Assumes char* buf is of at LEAST length 5. 
@@ -62,6 +54,39 @@ void NesDebugger::PopulateCharBufferWithHex(char* buf, uint16_t byteData)
 	buf[2] = NibbleToChar(firstNibbleLower);
 	buf[3] = NibbleToChar(secondNibbleLower);
 	buf[4] = '\00';
+}
+
+void NesDebugger::PopulateCharBufferWithHex(char* buf, uint8_t byteData)
+{
+	unsigned char firstNibbleLower = (byteData >> 4);
+	unsigned char secondNibbleLower = (byteData & 0x0F);
+	buf[0] = NibbleToChar(firstNibbleLower);
+	buf[1] = NibbleToChar(secondNibbleLower);
+	buf[2] = '\00';
+}
+
+//Assumes char* buf is of at LEAST length 3. 
+void NesDebugger::PopulateCharBufferWithHex(char* buf, std::byte inByte)
+{
+	std::byte firstNibbleLower = (inByte >> 4);
+	std::byte secondNibbleLower = (inByte & static_cast<std::byte>(0x0F));
+	buf[2] = NibbleToChar(firstNibbleLower);
+	buf[3] = NibbleToChar(secondNibbleLower);
+	buf[4] = '\00';
+}
+
+char NesDebugger::NibbleToChar(std::byte nybble)
+{
+	uint8_t arithmeticByte = std::to_integer<uint8_t>(nybble);
+	if(arithmeticByte < 0xA)
+	{
+		 return (char)('0' + arithmeticByte);
+	}
+	else
+	{
+		 arithmeticByte -= 10U;
+		 return (char)('A' + arithmeticByte);
+	}
 }
 
 char NesDebugger::NibbleToChar(unsigned char nybble)
@@ -101,11 +126,7 @@ void NesDebugger::RenderDebugger()
 		IncrementActiveInstruction();
 		mStepped = true;
 	}
-	ImGui::Text("A");
-	ImGui::SameLine();
-	ImGui::PushItemWidth(40);
-	ImGui::InputText("##A", mARegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
-	ImGui::PopItemWidth();
+	mAReg.Render();
 	ImGui::SameLine();
 	ImGui::Text("     ");
 	ImGui::SameLine();
@@ -126,26 +147,13 @@ void NesDebugger::RenderDebugger()
 	ImGui::Checkbox("C", &show_demo_window);
 
 
-	ImGui::Text("X");
+	mXReg.Render();
 	ImGui::SameLine();
-	ImGui::PushItemWidth(40);
-	ImGui::InputText("##X", mXRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
-	ImGui::PopItemWidth();
-	ImGui::SameLine();
-	ImGui::Text("Y");
-	ImGui::SameLine();
-	ImGui::PushItemWidth(40);
-	ImGui::InputText("##Y", mYRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
-	ImGui::PopItemWidth();
+	mYReg.Render();
 	ImGui::SameLine();
 	ImGui::Text("        ");
 	ImGui::SameLine();
-	ImGui::Text("PC");
-	ImGui::SameLine();
-	ImGui::PushItemWidth(40);
-	ImGui::InputText("##PC", mPCRegBuf, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
-	ImGui::PopItemWidth();
-
+	mPCReg.Render();
 
 
 	ImVec2 size(50, 20);

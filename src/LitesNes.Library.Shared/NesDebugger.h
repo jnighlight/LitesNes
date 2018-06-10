@@ -3,6 +3,8 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include <cstddef>
+#include <Register.h>
 
 class NesDebugger
 {
@@ -34,6 +36,10 @@ public:
 	void RenderMemoryWindow();
 	void Update();
 	static void PopulateCharBufferWithHex(char* buf, uint16_t byteData);
+	static void PopulateCharBufferWithHex(char * buf, uint8_t byteData);
+	static void PopulateCharBufferWithHex(char * buf, std::byte byte);
+
+	static char NibbleToChar(std::byte nybble);
 	
 	std::vector<NesInstruction> mInstructionList;
 	uint32_t mActiveInstruction = 0;
@@ -41,17 +47,10 @@ private:
 	void IncrementActiveInstruction();
 	static char NibbleToChar(unsigned char nybble);
 
-	char mARegBuf[8] = "";
-	uint16_t mAReg = 0;
-
-	char mXRegBuf[8] = "";
-	uint16_t mXReg = 0;
-
-	char mYRegBuf[8] = "";
-	uint16_t mYReg = 0;
-
-	char mPCRegBuf[8] = "";
-	uint16_t mPCReg = 0;
+	Register mAReg = Register("A");
+	Register mXReg = Register("X");
+	Register mYReg = Register("Y");
+	Register mPCReg = Register("PC");
 
 	bool mRunning = false;
 	bool mShouldStep = false;
