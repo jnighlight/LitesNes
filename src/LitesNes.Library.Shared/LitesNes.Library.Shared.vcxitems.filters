@@ -30,6 +30,10 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Register.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StatusRegister.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstruction.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -47,5 +51,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Register.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StatusRegister.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstruction.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.cpp" />
   </ItemGroup>
 </Project>

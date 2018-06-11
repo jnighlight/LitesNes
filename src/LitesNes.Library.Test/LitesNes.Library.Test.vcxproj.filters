@@ -7,5 +7,7 @@
   <ItemGroup>
     <ClCompile Include="unittest1.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="RegisterTest.cpp" />
+    <ClCompile Include="CpuInstructionTest.cpp" />
   </ItemGroup>
 </Project>

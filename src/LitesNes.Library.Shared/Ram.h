@@ -5,24 +5,20 @@
 #include <sstream>
 #include <cstddef>
 
-class Register
+class Ram
 {
 public:
 
-	Register(std::string name);
-	virtual ~Register();
+	Ram(std::string name);
+	~Ram();
 
 	void Render();
 	void Add(uint8_t addition);
 	void Subtract(uint8_t subtraction);
-	void Set(uint8_t inValue);
-	void Set(Register& otherReg);
-	bool IsZero() const;
-	bool IsNegative() const;
 
-protected:
+private:
 	std::string mName;
 	std::string mHiddenName;
-	uint8_t mData;
+	uint8_t mData[1024*2];
 	bool mIsAccumulator = false;
 };

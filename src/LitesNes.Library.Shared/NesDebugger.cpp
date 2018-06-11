@@ -2,10 +2,11 @@
 #include "NesDebugger.h"
 #include "imgui.h"
 
+StatusRegister NesDebugger::sStatusReg = StatusRegister("S");
+
 NesDebugger::NesDebugger()
 {
 }
-
 
 NesDebugger::~NesDebugger()
 {
@@ -105,7 +106,6 @@ char NesDebugger::NibbleToChar(unsigned char nybble)
 void NesDebugger::RenderDebugger()
 {
 	ImGui::Begin("LitesNesDebugger");
-    bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	static float f = 0.0f;
@@ -128,23 +128,7 @@ void NesDebugger::RenderDebugger()
 	}
 	mAReg.Render();
 	ImGui::SameLine();
-	ImGui::Text("     ");
-	ImGui::SameLine();
-	ImGui::Checkbox("N", &show_demo_window);      // Edit bools storing our windows open/close state
-	ImGui::SameLine();
-	ImGui::Checkbox("V", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("U", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("B", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("D", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("I", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("Z", &show_demo_window);
-	ImGui::SameLine();
-	ImGui::Checkbox("C", &show_demo_window);
+	sStatusReg.Render();
 
 
 	mXReg.Render();
@@ -191,25 +175,6 @@ void NesDebugger::RenderDebugger()
 void NesDebugger::RenderMemoryWindow()
 {
 	ImGui::Begin("LitesNesMemory");
-
-	ImGui::BeginGroup();
-	for (int line = 0; line < 100; line++)
-	{
-		ImGui::Text("RAM %04d", line * 10);
-		ImGui::SameLine();
-		ImGui::Text("\t");
-		for (uint32_t i = 0; i < 16; ++i) {
-			ImGui::SameLine();
-			ImGui::Text("00");
-		}
-		ImGui::SameLine();
-		ImGui::Text("\t");
-		for (uint32_t i = 0; i < 16; ++i) {
-			ImGui::SameLine();
-			ImGui::Text(".");
-		}
-	}
-	ImGui::EndGroup();
-
+	mRam.Render();
 	ImGui::End();
 }

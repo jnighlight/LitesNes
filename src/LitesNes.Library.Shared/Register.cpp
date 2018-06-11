@@ -1,3 +1,4 @@
+#include "Register.h"
 #include "pch.h"
 #include "Register.h"
 #include "imgui.h"
@@ -22,6 +23,25 @@ void Register::Add(uint8_t addition)
 void Register::Subtract(uint8_t subtraction)
 {
 	mData -= subtraction;
+}
+
+void Register::Set(uint8_t inValue)
+{
+	mData = inValue;
+}
+
+void Register::Set(Register & otherReg)
+{
+	mData = otherReg.mData;
+}
+
+bool Register::IsZero() const
+{
+	return mData == 0;
+}
+bool Register::IsNegative() const
+{
+	return mData & 0b10000000;
 }
 
 void Register::Render()

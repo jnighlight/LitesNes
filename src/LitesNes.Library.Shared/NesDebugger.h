@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <sstream>
 #include <cstddef>
-#include <Register.h>
+#include "Register.h"
+#include "StatusRegister.h"
+#include "Ram.h"
 
 class NesDebugger
 {
@@ -43,6 +45,7 @@ public:
 	
 	std::vector<NesInstruction> mInstructionList;
 	uint32_t mActiveInstruction = 0;
+	static StatusRegister sStatusReg;// = StatusRegister("S");
 private:
 	void IncrementActiveInstruction();
 	static char NibbleToChar(unsigned char nybble);
@@ -52,8 +55,9 @@ private:
 	Register mYReg = Register("Y");
 	Register mPCReg = Register("PC");
 
+	Ram mRam = Ram("Ram");
+
 	bool mRunning = false;
 	bool mShouldStep = false;
 	bool mStepped = false;
 };
-
