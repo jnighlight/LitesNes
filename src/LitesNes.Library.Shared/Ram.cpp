@@ -1,8 +1,13 @@
+#include "Ram.h"
 #include "pch.h"
 #include <ctype.h>
 #include "Ram.h"
 #include "imgui.h"
 #include "NesDebugger.h"
+
+Ram::Ram()
+	:Ram("DefaultName")
+{}
 
 Ram::Ram(std::string name)
 	:mName(name), mHiddenName("##")
@@ -29,6 +34,22 @@ void Ram::Subtract(uint8_t subtraction)
 {
 	subtraction;
 	//mData -= subtraction;
+}
+
+void Ram::SetMemoryByLocation(uint16_t memoryLocation, uint8_t data)
+{
+	if (memoryLocation > 1024 * 2) {
+		throw std::exception("trying to set out of bounds memory location");
+	}
+	mData[memoryLocation] = data;
+}
+
+uint8_t Ram::GetMemoryByLocation(uint16_t memoryLocation)
+{
+	if (memoryLocation > 1024 * 2) {
+		throw std::exception("trying to set out of bounds memory location");
+	}
+	return mData[memoryLocation];
 }
 
 void Ram::Render()

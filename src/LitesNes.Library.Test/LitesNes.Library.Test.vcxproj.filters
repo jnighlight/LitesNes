@@ -9,5 +9,6 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RegisterTest.cpp" />
     <ClCompile Include="CpuInstructionTest.cpp" />
+    <ClCompile Include="GenericInstructionTargetTest.cpp" />
   </ItemGroup>
 </Project>

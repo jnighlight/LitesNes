@@ -45,17 +45,19 @@ public:
 	
 	std::vector<NesInstruction> mInstructionList;
 	uint32_t mActiveInstruction = 0;
+
 	static StatusRegister sStatusReg;// = StatusRegister("S");
+	static Register mAReg;// = Register("A");
+	static Register mXReg;// = Register("X");
+	static Register mYReg;// = Register("Y");
+	static Register mPCReg;// = Register("PC");
+	static Register mSPReg;// = Register("PC");
+
+	static Ram mRam;// = Ram("Ram");
 private:
 	void IncrementActiveInstruction();
 	static char NibbleToChar(unsigned char nybble);
 
-	Register mAReg = Register("A");
-	Register mXReg = Register("X");
-	Register mYReg = Register("Y");
-	Register mPCReg = Register("PC");
-
-	Ram mRam = Ram("Ram");
 
 	bool mRunning = false;
 	bool mShouldStep = false;

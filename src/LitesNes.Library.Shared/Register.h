@@ -9,6 +9,7 @@ class Register
 {
 public:
 
+	Register();
 	Register(std::string name);
 	virtual ~Register();
 
@@ -19,6 +20,7 @@ public:
 	void Set(Register& otherReg);
 	bool IsZero() const;
 	bool IsNegative() const;
+	uint8_t GetRegisterContents() { return mData; };
 
 protected:
 	std::string mName;

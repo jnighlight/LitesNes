@@ -2,7 +2,11 @@
 #include "pch.h"
 #include "Register.h"
 #include "imgui.h"
+#include "ByteHelper.h"
 #include "NesDebugger.h"
+
+Register::Register()
+	:Register("DefaultRegName") {};
 
 Register::Register(std::string name)
 	:mName(name), mHiddenName("##")
@@ -37,11 +41,12 @@ void Register::Set(Register & otherReg)
 
 bool Register::IsZero() const
 {
-	return mData == 0;
+	return ByteHelper::IsZero(mData);
 }
+
 bool Register::IsNegative() const
 {
-	return mData & 0b10000000;
+	return ByteHelper::IsNegative(mData);
 }
 
 void Register::Render()

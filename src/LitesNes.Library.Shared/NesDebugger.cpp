@@ -3,6 +3,13 @@
 #include "imgui.h"
 
 StatusRegister NesDebugger::sStatusReg = StatusRegister("S");
+Register NesDebugger::mAReg = Register("A");
+Register NesDebugger::mXReg = Register("X");
+Register NesDebugger::mYReg = Register("Y");
+Register NesDebugger::mPCReg = Register("PC");
+Register NesDebugger::mSPReg = Register("SP");
+
+Ram NesDebugger::mRam = Ram("Ram");
 
 NesDebugger::NesDebugger()
 {

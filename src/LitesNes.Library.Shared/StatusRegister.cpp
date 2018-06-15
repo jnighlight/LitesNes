@@ -1,6 +1,7 @@
 #include "StatusRegister.h"
 #include "StatusRegister.h"
 #include "StatusRegister.h"
+#include "StatusRegister.h"
 #include "pch.h"
 #include "StatusRegister.h"
 #include "imgui.h"
@@ -81,4 +82,34 @@ void StatusRegister::SetNegativeFlag(bool negativeFlag)
 bool StatusRegister::GetNegativeFlag()
 {
 	return mData & 0b00000001;
+}
+
+void StatusRegister::SetInterruptDisableFlag(bool interruptDisableFlag)
+{
+	std::byte* statusByte = reinterpret_cast<std::byte*>(&mData);
+	if (interruptDisableFlag) {
+		(*statusByte) |= std::byte(0b00100000);
+	} else {
+		(*statusByte) &= std::byte(0b11011111);
+	}
+}
+
+bool StatusRegister::GetInterruptDisableFlag()
+{
+	return mData & 0b00100000;
+}
+
+void StatusRegister::SetCarryFlag(bool carryFlag)
+{
+	std::byte* statusByte = reinterpret_cast<std::byte*>(&mData);
+	if (carryFlag) {
+		(*statusByte) |= std::byte(0b10000000);
+	} else {
+		(*statusByte) &= std::byte(0b01111111);
+	}
+}
+
+bool StatusRegister::GetCarryFlag()
+{
+	return mData & 0b10000000;
 }

@@ -13,4 +13,8 @@ public:
 	bool GetZeroFlag();
 	void SetNegativeFlag(bool negativeFlag);
 	bool GetNegativeFlag();
+	void SetInterruptDisableFlag(bool interruptDisableFlag);
+	bool GetInterruptDisableFlag();
+	void SetCarryFlag(bool carryDisableFlag);
+	bool GetCarryFlag();
 };
