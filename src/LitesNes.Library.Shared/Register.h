@@ -21,6 +21,7 @@ public:
 	bool IsZero() const;
 	bool IsNegative() const;
 	uint8_t GetRegisterContents() { return mData; };
+	std::string GetName() { return mName; };
 
 protected:
 	std::string mName;

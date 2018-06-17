@@ -6,6 +6,7 @@
 
 std::map<uint8_t, CpuInstruction::OperationDescription> CpuInstruction::sOperations = {
 
+	{0x00, {"NOP", 1, 1, GenericInstructionTarget::TargetType::ENotUsed, nullptr, 				NesDebugger::mXReg, NesDebugger::mXReg, CpuInstruction::NoOperation}},
 	{0xF8, {"SED", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr, 				NesDebugger::mXReg, NesDebugger::mXReg, CpuInstruction::SetDecimalFlag}},
 	{0x78, {"SEI", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr, 				NesDebugger::mXReg, NesDebugger::mXReg, CpuInstruction::SetInterruptFlag}},
 
@@ -62,6 +63,14 @@ void CpuInstruction::SetInterruptFlag(GenericInstructionTarget& firstArgument, R
 	NesDebugger::sStatusReg.SetInterruptDisableFlag(true);
 }
 
+void CpuInstruction::NoOperation(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+}
+
 void CpuInstruction::SetDecimalFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
 {
 	UNREFERENCED_PARAMETER(firstArgument);
@@ -82,12 +91,28 @@ void CpuInstruction::SetCarryFlag(GenericInstructionTarget& firstArgument, Regis
 }
 
 CpuInstruction::CpuInstruction()
+	:mDescription(CpuInstruction::sOperations.find(0)->second)
 {
 }
 
 CpuInstruction::CpuInstruction(uint8_t opcode, GenericInstructionTarget firstTarget)
-	:mOpCode(opcode), mFirstArgument(firstTarget)
+	:mOpCode(opcode), mFirstArgument(firstTarget), mDescription(CpuInstruction::sOperations.find(mOpCode)->second)
 {
+}
+
+CpuInstruction::CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation)
+	:mOpCode(opcode), mDescription(description)
+{
+	uint16_t inArgData = 0;
+	if (mDescription.mBytes == 2) {
+		inArgData = argumentLocation[1];
+	} else if (mDescription.mBytes == 3) {
+		inArgData = argumentLocation[2];
+		inArgData = inArgData << 8;
+		inArgData |= argumentLocation[1];
+	}
+	mFirstArgument.SetTargetType(description.mFirstArgumentType);
+	mFirstArgument.SetLiteralData(inArgData);
 }
 
 void CpuInstruction::Execute()
@@ -107,4 +132,55 @@ CpuInstruction::~CpuInstruction()
 std::string CpuInstruction::GetOpcodeName(uint8_t opcode)
 {
 	return sOperations[opcode].mOpcodeName;
+}
+
+std::string CpuInstruction::GetArgumentDescription()
+{
+	char fullAddress[5];
+	switch (mDescription.mFirstArgumentType)
+	{
+	case GenericInstructionTarget::EInvalid:
+		throw(std::exception("Invalid GenericInstructionType"));
+		break;
+	case GenericInstructionTarget::ENotUsed:
+		return std::string("");
+		break;
+	case GenericInstructionTarget::ERegister:
+		throw(std::exception("Register wat?"));
+		break;
+	case GenericInstructionTarget::ERam:
+		NesDebugger::PopulateCharBufferWithHex(fullAddress, mFirstArgument.GetLiteralData());
+		break;
+	case GenericInstructionTarget::EAbsolute:
+		NesDebugger::PopulateCharBufferWithHex(fullAddress, mFirstArgument.GetLiteralData());
+		break;
+	case GenericInstructionTarget::EZeroPage:
+		NesDebugger::PopulateCharBufferWithHex(fullAddress, uint8_t(mFirstArgument.GetLiteralData()));
+		break;
+	case GenericInstructionTarget::EImmediate:
+		throw(std::exception("Register Modifying Immediate, that's not rite..."));
+		break;
+	case GenericInstructionTarget::EIndexedIndirect:
+		//TODO: Get zero page val, add X to it, then point to the resultant memory
+		break;
+	case GenericInstructionTarget::EIndirectIndexed:
+		//TODO: Get zero page val, store data at location, add Y to it, then point to the resultant memory
+		break;
+	case GenericInstructionTarget::EMax:
+		break;
+	default:
+		throw(std::exception("Wat the fck?"));
+	}
+	return std::string(fullAddress);
+}
+
+std::string CpuInstruction::GetRegOffsetString()
+{
+	if (mDescription.mMemoryModReg != nullptr)
+	{
+		std::string ret(",");
+		ret.append(mDescription.mMemoryModReg->GetName());
+		return ret;
+	}
+	return std::string("");
 }

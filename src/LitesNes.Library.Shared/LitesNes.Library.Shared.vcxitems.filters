@@ -37,6 +37,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RomReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rom.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -61,5 +62,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)RomReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rom.cpp" />
   </ItemGroup>
 </Project>

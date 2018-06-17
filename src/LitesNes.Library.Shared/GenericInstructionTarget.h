@@ -40,6 +40,7 @@ public:
 		Reset(); mDataSource.mRegister = &inReg; SetTargetType(ERegister);
 	}
 	void SetLiteralData(uint16_t literalData) { mLiteralByte = literalData; };
+	uint16_t GetLiteralData() { return mLiteralByte; };
 
 	void SetData(uint8_t data);
 	void SetData(uint8_t data, uint16_t location);
@@ -49,7 +50,13 @@ public:
 	bool IsZero();
 	bool IsNegative();
 	void ModifyMemory(Register& registerToModifyBy);
-	uint16_t GetMemoryLocation() { return mModifiedByte; };
+	uint16_t GetMemoryLocation() {
+		if (!mHasBeenModified) {
+			mModifiedByte = mLiteralByte;
+			mHasBeenModified = true;
+		}
+		return mModifiedByte;
+	};
 
 private:
 	TargetType mTargetType = EInvalid;

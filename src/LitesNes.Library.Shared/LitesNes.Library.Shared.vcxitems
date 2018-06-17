@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Register.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rom.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RomReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StatusRegister.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_rect_pack.h" />
@@ -52,6 +53,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Register.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rom.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RomReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StatusRegister.cpp" />
   </ItemGroup>

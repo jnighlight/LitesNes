@@ -7,6 +7,7 @@
 #include "Register.h"
 #include "StatusRegister.h"
 #include "Ram.h"
+#include "CpuInstruction.h"
 
 class NesDebugger
 {
@@ -43,7 +44,7 @@ public:
 
 	static char NibbleToChar(std::byte nybble);
 	
-	std::vector<NesInstruction> mInstructionList;
+	std::vector<CpuInstruction> mInstructionList;
 	uint32_t mActiveInstruction = 0;
 
 	static StatusRegister sStatusReg;// = StatusRegister("S");

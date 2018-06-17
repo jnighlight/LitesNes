@@ -65,6 +65,7 @@ public:
 
 	CpuInstruction();
 	CpuInstruction(uint8_t opcode, GenericInstructionTarget memoryLocation);
+	CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation);
 	~CpuInstruction();
 	void Execute();
 
@@ -74,7 +75,17 @@ public:
 	static void SetInterruptFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void SetDecimalFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void SetCarryFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void NoOperation(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+
+	bool GetIsBreakpoint() { return mIsBreakPoint; };
+	std::string GetOperationName() { return mDescription.mOpcodeName; };
+	std::string GetArgumentDescription();
+	std::string GetRegOffsetString();
+	void ToggleIsBreakpoint() { mIsBreakPoint = !mIsBreakPoint; };
 private:
 	uint8_t mOpCode;
 	GenericInstructionTarget mFirstArgument;
+	const OperationDescription& mDescription;
+
+	bool mIsBreakPoint = false;
 };

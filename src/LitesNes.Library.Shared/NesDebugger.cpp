@@ -24,19 +24,16 @@ void NesDebugger::Update()
 	if (mRunning) {
 		IncrementActiveInstruction();
 		mStepped = true;
-		if (mInstructionList[mActiveInstruction].mIsBreakpoint)
+		if (mInstructionList[mActiveInstruction].GetIsBreakpoint())
 		{
 			mRunning = false;
 		}
-		mAReg.Add(1);
-		mXReg.Add(1);
-		mYReg.Add(1);
-		mPCReg.Add(1);
 	}
 }
 
 void NesDebugger::IncrementActiveInstruction()
 {
+	mInstructionList[mActiveInstruction].Execute();
 	mActiveInstruction++;
 	if (mActiveInstruction >= mInstructionList.size())
 	{
@@ -158,20 +155,25 @@ void NesDebugger::RenderDebugger()
 		for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
 			std::string outString;
 			outString.reserve(20);
-			if (mInstructionList[i].mIsBreakpoint) {
+			if (mInstructionList[i].GetIsBreakpoint()) {
 				outString.append("->");
 			} else {
 				outString.append("  ");
 			}
-			outString.append(mInstructionList[i].mMemoryLocationBuf);
+			//outString.append(mInstructionList[i].mMemoryLocationBuf);
+			outString.append("00");
 			outString.append("\t");
-			outString.append(mInstructionList[i].mName);
+			outString.append(mInstructionList[i].GetOperationName());
+			outString.append("\t");
+			outString.append(mInstructionList[i].GetArgumentDescription());
+			outString.append(mInstructionList[i].GetRegOffsetString());
 			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction, 0, size))
 			{
-				mInstructionList[i].mIsBreakpoint = !mInstructionList[i].mIsBreakpoint;
+				mInstructionList[i].ToggleIsBreakpoint();
 			}
 			if (mStepped && i == mActiveInstruction) {
 				ImGui::SetScrollHere(0.25f); // 0.0f:top, 0.5f:center, 1.0f:bottom
+				mStepped = false;
 			}
 		}
 	}
