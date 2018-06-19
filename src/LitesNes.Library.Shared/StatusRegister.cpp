@@ -113,3 +113,18 @@ bool StatusRegister::GetCarryFlag()
 {
 	return mData & 0b10000000;
 }
+
+void StatusRegister::SetOverflowFlag(bool overflowFlag)
+{
+	std::byte* statusByte = reinterpret_cast<std::byte*>(&mData);
+	if (overflowFlag) {
+		(*statusByte) |= std::byte(0b00000010);
+	} else {
+		(*statusByte) &= std::byte(0b11111101);
+	}
+}
+
+bool StatusRegister::GetOverflowFlag()
+{
+	return mData & 0b00000010;
+}

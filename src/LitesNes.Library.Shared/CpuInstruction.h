@@ -20,6 +20,24 @@ public:
 							uint8_t cycleCount,
 							GenericInstructionTarget::TargetType firstArgType,
 							Register* memoryModRegister,
+							Ram& defaultFromRam,
+							Register& defaultToRegister,
+							std::function<void(GenericInstructionTarget&, Register*, GenericInstructionTarget&, GenericInstructionTarget&)> function)
+		:mOpcodeName(opcodeName)
+		,mBytes(byteCount)
+		,mCycles(cycleCount)
+		,mFirstArgumentType(firstArgType)
+		,mMemoryModReg(memoryModRegister)
+		,mDefaultFromTarget(defaultFromRam)
+		,mDefaultToTarget(defaultToRegister)
+		,mExecuteFunction(function)
+		{};
+
+		OperationDescription(std::string opcodeName,
+							uint8_t byteCount,
+							uint8_t cycleCount,
+							GenericInstructionTarget::TargetType firstArgType,
+							Register* memoryModRegister,
 							Register& defaultFromRegister,
 							Ram& defaultToRam,
 							std::function<void(GenericInstructionTarget&, Register*, GenericInstructionTarget&, GenericInstructionTarget&)> function)
@@ -70,17 +88,22 @@ public:
 	void Execute();
 
 	static std::string GetOpcodeName(uint8_t opcode);
-	static void TransferDataInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void StoreDataInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void LoadDataInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void SetInterruptFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void SetDecimalFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void SetCarryFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void NoOperation(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void TransferRegisterInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void AndOperationInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void EorOperationInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void OrOperationInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BitTestInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 
 	bool GetIsBreakpoint() { return mIsBreakPoint; };
 	std::string GetOperationName() { return mDescription.mOpcodeName; };
-	std::string GetArgumentDescription();
-	std::string GetRegOffsetString();
+	void GetArgumentDescription(std::string& stringToAppendTo);
+	void GetRegOffsetString(std::string& stringToAppendTo);
 	void ToggleIsBreakpoint() { mIsBreakPoint = !mIsBreakPoint; };
 private:
 	uint8_t mOpCode;

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "GenericInstructionTarget.h"
 #include "ByteHelper.h"
-
+#include "NesDebugger.h"
 
 GenericInstructionTarget::GenericInstructionTarget()
 {
@@ -101,9 +101,12 @@ uint8_t GenericInstructionTarget::GetData()
 	case GenericInstructionTarget::ERegister:
 		return mDataSource.mRegister->GetRegisterContents();
 		break;
+	case GenericInstructionTarget::EImmediate:
+		return uint8_t(mLiteralByte & 0xFF); //Immediates are always 1 byte
+		break;
+	case GenericInstructionTarget::ERam:
 	case GenericInstructionTarget::EAbsolute:
 	case GenericInstructionTarget::EZeroPage:
-	case GenericInstructionTarget::EImmediate:
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
@@ -158,6 +161,7 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 
 void GenericInstructionTarget::SetData(uint8_t data)
 {
+	uint16_t actualAddress = 0;
 	switch (mTargetType)
 	{
 	case GenericInstructionTarget::EInvalid:
@@ -167,7 +171,7 @@ void GenericInstructionTarget::SetData(uint8_t data)
 		throw(std::exception("Modifying a not used memory location. Weird."));
 		break;
 	case GenericInstructionTarget::ERegister:
-		throw(std::exception("Register modifying register, something's up"));
+		mDataSource.mRegister->Set(data);
 		break;
 	case GenericInstructionTarget::ERam:
 		mDataSource.mRam->SetMemoryByLocation(mModifiedByte, data);
@@ -182,10 +186,23 @@ void GenericInstructionTarget::SetData(uint8_t data)
 		throw(std::exception("Register Modifying Immediate, that's not rite..."));
 		break;
 	case GenericInstructionTarget::EIndexedIndirect:
+		mModifiedByte = mLiteralByte + NesDebugger::mXReg.GetRegisterContents();
+		mModifiedByte &= 0xFF;
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress <<= 8;
+		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
+		mDataSource.mRam->SetMemoryByLocation(actualAddress, data);
 		//TODO: Get zero page val, add X to it, then point to the resultant memory
 		break;
 	case GenericInstructionTarget::EIndirectIndexed:
 		//TODO: Get zero page val, store data at location, add Y to it, then point to the resultant memory
+		mModifiedByte = mLiteralByte;
+		mModifiedByte &= 0xFF;
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress <<= 8;
+		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
+		actualAddress += NesDebugger::mYReg.GetRegisterContents();
+		mDataSource.mRam->SetMemoryByLocation(actualAddress, data);
 		break;
 	case GenericInstructionTarget::EMax:
 		break;
@@ -205,7 +222,7 @@ void GenericInstructionTarget::SetData(uint8_t data, uint16_t location)
 		throw(std::exception("Modifying a not used memory location. Weird."));
 		break;
 	case GenericInstructionTarget::ERegister:
-		throw(std::exception("Register modifying register, something's up"));
+		mDataSource.mRegister->Set(data);
 		break;
 	case GenericInstructionTarget::ERam:
 		mDataSource.mRam->SetMemoryByLocation(location, data);

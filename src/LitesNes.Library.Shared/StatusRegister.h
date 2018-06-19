@@ -17,4 +17,6 @@ public:
 	bool GetInterruptDisableFlag();
 	void SetCarryFlag(bool carryDisableFlag);
 	bool GetCarryFlag();
+	void SetOverflowFlag(bool overflowFlag);
+	bool GetOverflowFlag();
 };

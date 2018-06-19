@@ -13,6 +13,7 @@ Ram NesDebugger::mRam = Ram("Ram");
 
 NesDebugger::NesDebugger()
 {
+	mSPReg.Set(0xFD);
 }
 
 NesDebugger::~NesDebugger()
@@ -39,9 +40,6 @@ void NesDebugger::IncrementActiveInstruction()
 	{
 		mActiveInstruction = 0;
 	}
-	mAReg.Add(1);
-	mXReg.Add(1);
-	mYReg.Add(1);
 	mPCReg.Add(1);
 }
 
@@ -152,21 +150,20 @@ void NesDebugger::RenderDebugger()
 	size.y /= 1.5;
 	if (ImGui::ListBoxHeader("##Instructions", totalListSize))
 	{
+		std::string outString;
+		outString.reserve(30);
 		for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
-			std::string outString;
-			outString.reserve(20);
+			outString.clear();
 			if (mInstructionList[i].GetIsBreakpoint()) {
 				outString.append("->");
 			} else {
 				outString.append("  ");
 			}
 			//outString.append(mInstructionList[i].mMemoryLocationBuf);
-			outString.append("00");
-			outString.append("\t");
+			outString.append("00\t");
 			outString.append(mInstructionList[i].GetOperationName());
 			outString.append("\t");
-			outString.append(mInstructionList[i].GetArgumentDescription());
-			outString.append(mInstructionList[i].GetRegOffsetString());
+			mInstructionList[i].GetArgumentDescription(outString);
 			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction, 0, size))
 			{
 				mInstructionList[i].ToggleIsBreakpoint();

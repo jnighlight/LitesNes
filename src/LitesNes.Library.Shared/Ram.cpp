@@ -59,7 +59,7 @@ void Ram::Render()
 	char text[5];
 	for (int line = 0; line < 128; line++)
 	{
-		ImGui::Text("RAM %04d", line * 10);
+		ImGui::Text("RAM %04X", line * 16);
 		ImGui::SameLine();
 		ImGui::Text("\t");
 		for (uint32_t i = 0; i < 16; ++i) {
@@ -75,7 +75,7 @@ void Ram::Render()
 			ImGui::SameLine();
 			char asciiChar[2];
 			asciiChar[0] = mData[index];
-			if (asciiChar[0] == '?' || isspace(uint8_t(asciiChar[0]))) {
+			if (asciiChar[0] > 126 || asciiChar[0] < 32) {
 				asciiChar[0] = '.';
 			}
 			asciiChar[1] = '\00';

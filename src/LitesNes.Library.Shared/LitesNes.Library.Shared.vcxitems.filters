@@ -33,7 +33,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StatusRegister.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstruction.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RomReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
@@ -58,7 +57,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StatusRegister.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstruction.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RomReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />

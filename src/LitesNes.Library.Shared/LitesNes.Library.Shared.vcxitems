@@ -16,7 +16,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstruction.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imconfig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui.h" />
@@ -36,7 +35,6 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstruction.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstructionRegisterTransfer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
