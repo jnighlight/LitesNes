@@ -8,12 +8,18 @@ Register NesDebugger::mXReg = Register("X");
 Register NesDebugger::mYReg = Register("Y");
 Register NesDebugger::mPCReg = Register("PC");
 Register NesDebugger::mSPReg = Register("SP");
+std::vector<uint8_t> NesDebugger::mStack(256);
+
+uint32_t NesDebugger::mActiveInstruction = 0;
+std::vector<CpuInstruction> NesDebugger::mInstructionList;
 
 Ram NesDebugger::mRam = Ram("Ram");
+std::map<uint16_t, uint16_t> NesDebugger::sOperations;
 
 NesDebugger::NesDebugger()
 {
 	mSPReg.Set(0xFD);
+	//mStack.reserve(256);
 }
 
 NesDebugger::~NesDebugger()
@@ -40,7 +46,7 @@ void NesDebugger::IncrementActiveInstruction()
 	{
 		mActiveInstruction = 0;
 	}
-	mPCReg.Add(1);
+	mPCReg.Set(uint8_t(mInstructionList[mActiveInstruction].GetAddress()));
 }
 
 //Assumes char* buf is of at LEAST length 5. 
@@ -76,6 +82,19 @@ void NesDebugger::PopulateCharBufferWithHex(char* buf, std::byte inByte)
 	buf[2] = NibbleToChar(firstNibbleLower);
 	buf[3] = NibbleToChar(secondNibbleLower);
 	buf[4] = '\00';
+}
+
+void NesDebugger::PushByteToStack(uint8_t byte)
+{
+	NesDebugger::mStack[NesDebugger::mSPReg.GetRegisterContents()] = byte;
+	NesDebugger::mSPReg.Subtract(1);
+}
+
+uint8_t NesDebugger::PopByteFromStack()
+{
+	NesDebugger::mSPReg.Add(1);
+	uint8_t popped = NesDebugger::mStack[NesDebugger::mSPReg.GetRegisterContents()];
+	return popped;
 }
 
 char NesDebugger::NibbleToChar(std::byte nybble)
@@ -117,6 +136,11 @@ void NesDebugger::RenderDebugger()
 		mRunning = true;
 	}
 	ImGui::SameLine();
+	if (ImGui::Button("Stop"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
+	{
+		mRunning = false;
+	}
+	ImGui::SameLine();
 	if (ImGui::Button("Step"))
 	{
 		IncrementActiveInstruction();
@@ -140,6 +164,8 @@ void NesDebugger::RenderDebugger()
 	ImGui::Text("        ");
 	ImGui::SameLine();
 	mPCReg.Render();
+	ImGui::SameLine();
+	mSPReg.Render();
 
 
 	ImVec2 size(50, 20);
@@ -160,11 +186,14 @@ void NesDebugger::RenderDebugger()
 				outString.append("  ");
 			}
 			//outString.append(mInstructionList[i].mMemoryLocationBuf);
-			outString.append("00\t");
+			std::stringstream ss;
+			ss << std::hex << std::setw(4) << std::setfill('0') << mInstructionList[i].GetAddress();
+			outString.append(ss.str());
+			outString.append("\t");
 			outString.append(mInstructionList[i].GetOperationName());
 			outString.append("\t");
 			mInstructionList[i].GetArgumentDescription(outString);
-			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction, 0, size))
+			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction && !mRunning, 0, size))
 			{
 				mInstructionList[i].ToggleIsBreakpoint();
 			}
@@ -183,4 +212,65 @@ void NesDebugger::RenderMemoryWindow()
 	ImGui::Begin("LitesNesMemory");
 	mRam.Render();
 	ImGui::End();
+}
+
+void NesDebugger::RenderStackWindow()
+{
+	ImGui::Begin("Stack");
+	ImGui::BeginGroup();
+	uint32_t index = 0;
+	char text[5];
+	uint32_t lineLength = 4;
+	for (uint32_t line = 0; line < NesDebugger::mStack.size(); line += lineLength)
+	{
+		ImGui::Text("RAM %04X", line);
+		ImGui::SameLine();
+		ImGui::Text("\t");
+		for (uint32_t i = 0; i < lineLength; ++i) {
+			ImGui::SameLine();
+			NesDebugger::PopulateCharBufferWithHex(text, mStack[index]);
+			++index;
+			ImGui::Text(text);
+		}
+	}
+	ImGui::EndGroup();
+	ImGui::End();
+}
+
+void NesDebugger::DrawFromBuffer(uint32_t* texArray)
+{
+	uint16_t index = 1024;
+	uint8_t drawX = mRam.GetMemoryByLocation(index);
+	uint8_t drawColor = 0;
+	uint8_t drawY = 0;
+	while (drawX != 0)
+	{
+		++index;
+		drawY = mRam.GetMemoryByLocation(index);
+		++index;
+		drawColor = mRam.GetMemoryByLocation(index);
+		++index;
+		uint32_t texArrayIndex = drawX + (256 * drawY);
+		switch (drawColor % 5)
+		{
+		case 0:
+			texArray[texArrayIndex] = 0x000000FF;
+			break;
+		case 1:
+			texArray[texArrayIndex] = 0xFFFFFFFF;
+			break;
+		case 2:
+			texArray[texArrayIndex] = 0xFF0000FF;
+			break;
+		case 3:
+			texArray[texArrayIndex] = 0x00FF00FF;
+			break;
+		case 4:
+			texArray[texArrayIndex] = 0x0000FFFF;
+			break;
+		default:
+			break;
+		}
+		drawX = mRam.GetMemoryByLocation(index);
+	}
 }

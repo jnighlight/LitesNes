@@ -125,6 +125,7 @@ uint8_t GenericInstructionTarget::GetData()
 
 void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 {
+	uint16_t actualAddress = 0;
 	switch (mTargetType)
 	{
 	case GenericInstructionTarget::EInvalid:
@@ -145,10 +146,28 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 	case GenericInstructionTarget::EImmediate:
 		throw(std::exception("Register Modifying Immediate, that's not rite..."));
 		break;
+	case GenericInstructionTarget::EIndirect:
+		mModifiedByte = mDataSource.mRam->GetMemoryByLocation(mLiteralByte);
+		mModifiedByte = mModifiedByte << 8;
+		mModifiedByte &= mDataSource.mRam->GetMemoryByLocation(mLiteralByte+1);
+		break;
 	case GenericInstructionTarget::EIndexedIndirect:
+		mModifiedByte = mLiteralByte + NesDebugger::mXReg.GetRegisterContents();
+		mModifiedByte &= 0xFF;
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress <<= 8;
+		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
+		mModifiedByte = actualAddress;
 		//TODO: Get zero page val, add X to it, then point to the resultant memory
 		break;
 	case GenericInstructionTarget::EIndirectIndexed:
+		mModifiedByte = mLiteralByte;
+		mModifiedByte &= 0xFF;
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress <<= 8;
+		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
+		actualAddress += NesDebugger::mYReg.GetRegisterContents();
+		mModifiedByte = actualAddress;
 		//TODO: Get zero page val, store data at location, add Y to it, then point to the resultant memory
 		break;
 	case GenericInstructionTarget::EMax:

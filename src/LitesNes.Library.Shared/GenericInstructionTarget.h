@@ -16,6 +16,8 @@ public:
 		EImmediate,
 		EIndexedIndirect,
 		EIndirectIndexed,
+		EIndirect,
+		ERelative,
 		EMax
 	};
 

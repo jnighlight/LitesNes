@@ -83,7 +83,7 @@ public:
 
 	CpuInstruction();
 	CpuInstruction(uint8_t opcode, GenericInstructionTarget memoryLocation);
-	CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation);
+	CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation, uint16_t address);
 	~CpuInstruction();
 	void Execute();
 
@@ -99,14 +99,42 @@ public:
 	static void EorOperationInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void OrOperationInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
 	static void BitTestInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void JumpInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfEqualInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfNotEqualInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfCarrySet(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfCarryClear(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfPositive(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfMinus(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfOverflowSet(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void BranchIfOverflowClear(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void JumpFromSubroutine(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void JumpToSubroutine(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void PushByteToStack(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void PopByteFromStack(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void PopByteFromStackNegZero(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void ShiftLeft(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void ShiftRight(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void RotateLeft(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void RotateRight(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void Increment(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void Decrement(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void AddWithCarryInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void SubtractWithCarryInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+	static void CompareWithRegister(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault);
+
+	static void SetActiveInstructionByMemoryAddress(uint16_t address);
+	static void ConditionalBranch(bool shouldJump, GenericInstructionTarget& firstArgument);
 
 	bool GetIsBreakpoint() { return mIsBreakPoint; };
 	std::string GetOperationName() { return mDescription.mOpcodeName; };
 	void GetArgumentDescription(std::string& stringToAppendTo);
 	void GetRegOffsetString(std::string& stringToAppendTo);
 	void ToggleIsBreakpoint() { mIsBreakPoint = !mIsBreakPoint; };
+	uint16_t GetAddress() { return mAddress; };
 private:
 	uint8_t mOpCode;
+	uint16_t mAddress;
 	GenericInstructionTarget mFirstArgument;
 	const OperationDescription& mDescription;
 

@@ -14,10 +14,11 @@ Ram::Ram(std::string name)
 {
 	mHiddenName = "##";
 	mHiddenName.append(mName);
+	/*
 	for (uint32_t i = 0; i < 2048; ++i)
 	{
 		mData[i] += uint8_t(i);
-	}
+	}*/
 }
 
 Ram::~Ram()

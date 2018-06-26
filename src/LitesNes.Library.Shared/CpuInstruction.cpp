@@ -90,7 +90,489 @@ std::map<uint8_t, CpuInstruction::OperationDescription> CpuInstruction::sOperati
 
 	{0x24, {"BIT", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BitTestInstruction}},
 	{0x2C, {"BIT", 2, 5, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BitTestInstruction}},
+
+	//Jump Operations
+	{0x4C, {"JMP", 3, 3, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpInstruction}},
+	{0x6C, {"JMP", 3, 5, GenericInstructionTarget::TargetType::EIndirect, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpInstruction}},
+
+	{0xF0, {"BEQ", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfEqualInstruction}},
+	{0xD0, {"BNE", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfNotEqualInstruction}},
+
+	{0x90, {"BCC", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfCarryClear}},
+	{0xB0, {"BCS", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfCarrySet}},
+
+	{0x30, {"BMI", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfMinus}},
+	{0x10, {"BPL", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfPositive}},
+
+	{0x50, {"BVC", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfOverflowClear}},
+	{0x70, {"BVS", 2, 2, GenericInstructionTarget::TargetType::ERelative, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::BranchIfOverflowSet}},
+
+	//Subroutine Operations
+	{0x20, {"JSR", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpToSubroutine}},
+	{0x60, {"RTS", 1, 6, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpFromSubroutine}},
+
+	//Subroutine Operations
+	{0x20, {"JSR", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpToSubroutine}},
+	{0x60, {"RTS", 1, 6, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::JumpFromSubroutine}},
+
+	//Stack Operations
+	{0x48, {"PHA", 1, 3, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::PushByteToStack}},
+	{0x08, {"PHP", 1, 3, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::sStatusReg, NesDebugger::mRam, CpuInstruction::PushByteToStack}},
+	{0x68, {"PLA", 1, 4, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::PopByteFromStackNegZero}},
+	{0x28, {"PLP", 1, 4, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mRam, NesDebugger::sStatusReg, CpuInstruction::PopByteFromStack}},
+
+	//Shift Operations
+	{0x0A, {"ASL", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::ShiftLeft}},
+	{0x06, {"ASL", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftLeft}},
+	{0x16, {"ASL", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftLeft}},
+	{0x0E, {"ASL", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftLeft}},
+	{0x1E, {"ASL", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftLeft}},
+
+	{0x4A, {"LSR", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::ShiftRight}},
+	{0x46, {"LSR", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftRight}},
+	{0x56, {"LSR", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftRight}},
+	{0x4E, {"LSR", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftRight}},
+	{0x5E, {"LSR", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::ShiftRight}},
+
+	{0x2A, {"ROL", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x26, {"ROL", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x36, {"ROL", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x2E, {"ROL", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x3E, {"ROL", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+
+	{0x6A, {"ROR", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x66, {"ROR", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x76, {"ROR", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x6E, {"ROR", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+	{0x7E, {"ROR", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::RotateLeft}},
+
+	//Inc/Dec Operations
+	{0xE6, {"INC", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::Increment}},
+	{0xF6, {"INC", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Increment}},
+	{0xEE, {"INC", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Increment}},
+	{0xFE, {"INC", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Increment}},
+
+	{0xE8, {"INX", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mXReg,NesDebugger::mRam, CpuInstruction::Increment}},
+	{0xC8, {"INY", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mYReg, NesDebugger::mRam, CpuInstruction::Increment}},
+
+	{0xC6, {"DEC", 2, 5, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg,NesDebugger::mRam, CpuInstruction::Decrement}},
+	{0xD6, {"DEC", 2, 6, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Decrement}},
+	{0xCE, {"DEC", 3, 6, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Decrement}},
+	{0xDE, {"DEC", 3, 7, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mRam, CpuInstruction::Decrement}},
+
+	{0xCA, {"DEX", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mXReg,NesDebugger::mRam, CpuInstruction::Decrement}},
+	{0x88, {"DEY", 1, 2, GenericInstructionTarget::TargetType::ENotUsed, nullptr,						NesDebugger::mYReg, NesDebugger::mRam, CpuInstruction::Decrement}},
+
+	//Arithmetic Operations
+	{0x69, {"ADC", 2, 2, GenericInstructionTarget::TargetType::EImmediate, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x65, {"ADC", 2, 3, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x75, {"ADC", 2, 4, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x6D, {"ADC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x7D, {"ADC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x79, {"ADC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mYReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x61, {"ADC", 2, 6, GenericInstructionTarget::TargetType::EIndexedIndirect, &NesDebugger::mXReg,	NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+	{0x71, {"ADC", 2, 5, GenericInstructionTarget::TargetType::EIndirectIndexed, &NesDebugger::mYReg,	NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::AddWithCarryInstruction}},
+
+	{0xE9, {"SBC", 2, 2, GenericInstructionTarget::TargetType::EImmediate, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xE5, {"SBC", 2, 3, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xF5, {"SBC", 2, 4, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xED, {"SBC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xFD, {"SBC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xF9, {"SBC", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mYReg,			NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xE1, {"SBC", 2, 6, GenericInstructionTarget::TargetType::EIndexedIndirect, &NesDebugger::mXReg,	NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+	{0xF1, {"SBC", 2, 5, GenericInstructionTarget::TargetType::EIndirectIndexed, &NesDebugger::mYReg,	NesDebugger::mRam, NesDebugger::mAReg, CpuInstruction::SubtractWithCarryInstruction}},
+
+	{0xC9, {"CMP", 2, 2, GenericInstructionTarget::TargetType::EImmediate, nullptr,						NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xC5, {"CMP", 2, 3, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xD5, {"CMP", 2, 4, GenericInstructionTarget::TargetType::EZeroPage, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xCD, {"CMP", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xDD, {"CMP", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mXReg,			NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xD9, {"CMP", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, &NesDebugger::mYReg,			NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xC1, {"CMP", 2, 6, GenericInstructionTarget::TargetType::EIndexedIndirect, &NesDebugger::mXReg,	NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xD1, {"CMP", 2, 5, GenericInstructionTarget::TargetType::EIndirectIndexed, &NesDebugger::mYReg,	NesDebugger::mAReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+
+	{0xE0, {"CPX", 2, 2, GenericInstructionTarget::TargetType::EImmediate, nullptr,						NesDebugger::mXReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xE4, {"CPX", 2, 3, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mXReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xEC, {"CPX", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mXReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+
+	{0xC0, {"CPY", 2, 2, GenericInstructionTarget::TargetType::EImmediate, nullptr,						NesDebugger::mYReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xC4, {"CPY", 2, 3, GenericInstructionTarget::TargetType::EZeroPage, nullptr,						NesDebugger::mYReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
+	{0xCC, {"CPY", 3, 4, GenericInstructionTarget::TargetType::EAbsolute, nullptr,						NesDebugger::mYReg, NesDebugger::mAReg, CpuInstruction::CompareWithRegister}},
 };
+
+void CpuInstruction::CompareWithRegister(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	if (memoryModRegister != nullptr)
+	{
+		firstArgument.ModifyMemory(*memoryModRegister);
+	}
+	int8_t regVal = fromDefault.GetData();
+	int8_t memVal = firstArgument.GetData();
+	int8_t total = regVal - memVal;
+
+	NesDebugger::sStatusReg.SetCarryFlag(regVal >= memVal);
+	NesDebugger::sStatusReg.SetZeroFlag(regVal == memVal);
+	NesDebugger::sStatusReg.SetNegativeFlag(total < 0);
+}
+
+void CpuInstruction::SubtractWithCarryInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(fromDefault);
+
+	if (memoryModRegister != nullptr)
+	{
+		firstArgument.ModifyMemory(*memoryModRegister);
+	}
+	//uint16_t overflowCheck = uint16_t(toDefault.GetData()) + uint16_t(firstArgument.GetData());
+	uint8_t carryModifier = NesDebugger::sStatusReg.GetCarryFlag() ? 0 : 1 ;
+	toDefault.SetData(int8_t(toDefault.GetData()) - int8_t((firstArgument.GetData() + carryModifier)));
+
+	//NesDebugger::sStatusReg.SetOverflowFlag(overflowCheck > 0xFF);
+	NesDebugger::sStatusReg.SetZeroFlag(toDefault.IsZero());
+	NesDebugger::sStatusReg.SetNegativeFlag(toDefault.IsNegative());
+}
+
+void CpuInstruction::AddWithCarryInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(fromDefault);
+
+	if (memoryModRegister != nullptr)
+	{
+		firstArgument.ModifyMemory(*memoryModRegister);
+	}
+	uint16_t overflowCheck = uint16_t(toDefault.GetData()) + uint16_t(firstArgument.GetData());
+	toDefault.SetData(int8_t(toDefault.GetData()) + int8_t(firstArgument.GetData()));
+
+	NesDebugger::sStatusReg.SetOverflowFlag(overflowCheck > 0xFF);
+	NesDebugger::sStatusReg.SetZeroFlag(toDefault.IsZero());
+	NesDebugger::sStatusReg.SetNegativeFlag(toDefault.IsNegative());
+}
+
+void CpuInstruction::Decrement(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(int8_t(fromDefault.GetData()) - 1);
+		NesDebugger::sStatusReg.SetZeroFlag(fromDefault.IsZero());
+		NesDebugger::sStatusReg.SetNegativeFlag(fromDefault.IsNegative());
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		firstArgument.SetData(int8_t(firstArgument.GetData()) - 1);
+		NesDebugger::sStatusReg.SetZeroFlag(firstArgument.IsZero());
+		NesDebugger::sStatusReg.SetNegativeFlag(firstArgument.IsNegative());
+	}
+}
+
+void CpuInstruction::Increment(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(int8_t(fromDefault.GetData()) + 1);
+		NesDebugger::sStatusReg.SetZeroFlag(fromDefault.IsZero());
+		NesDebugger::sStatusReg.SetNegativeFlag(fromDefault.IsNegative());
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		firstArgument.SetData(int8_t(firstArgument.GetData()) + 1);
+		NesDebugger::sStatusReg.SetZeroFlag(firstArgument.IsZero());
+		NesDebugger::sStatusReg.SetNegativeFlag(firstArgument.IsNegative());
+	}
+}
+
+void CpuInstruction::RotateRight(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint8_t byteToShift = 0;
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		byteToShift = fromDefault.GetData();
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		byteToShift = firstArgument.GetData();
+	}
+	bool newBit7 = NesDebugger::sStatusReg.GetCarryFlag();
+	bool carryFlag = byteToShift & 0x00000001;
+	byteToShift = byteToShift >> 1;
+	if (newBit7) {
+		byteToShift &= 0x10000000;
+	}
+	bool negFlag = byteToShift & 0x10000000;
+
+	NesDebugger::sStatusReg.SetZeroFlag(byteToShift == 0);
+	NesDebugger::sStatusReg.SetNegativeFlag(negFlag);
+	NesDebugger::sStatusReg.SetCarryFlag(carryFlag);
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(byteToShift);
+	} else {
+		firstArgument.SetData(byteToShift);
+	}
+}
+
+void CpuInstruction::RotateLeft(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint8_t byteToShift = 0;
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		byteToShift = fromDefault.GetData();
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		byteToShift = firstArgument.GetData();
+	}
+	bool newBit0 = NesDebugger::sStatusReg.GetCarryFlag();
+	bool carryFlag = byteToShift & 0x10000000;
+	byteToShift = byteToShift << 1;
+	bool negFlag = byteToShift & 0x10000000;
+	if (newBit0) {
+		byteToShift &= 0x00000001;
+	}
+
+	NesDebugger::sStatusReg.SetZeroFlag(byteToShift == 0);
+	NesDebugger::sStatusReg.SetNegativeFlag(negFlag);
+	NesDebugger::sStatusReg.SetCarryFlag(carryFlag);
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(byteToShift);
+	} else {
+		firstArgument.SetData(byteToShift);
+	}
+}
+
+void CpuInstruction::ShiftRight(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint8_t byteToShift = 0;
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		byteToShift = fromDefault.GetData();
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		byteToShift = firstArgument.GetData();
+	}
+	bool carryFlag = byteToShift & 0x00000001;
+	byteToShift = byteToShift >> 1;
+	bool negFlag = byteToShift & 0x10000000;
+
+	NesDebugger::sStatusReg.SetZeroFlag(byteToShift == 0);
+	NesDebugger::sStatusReg.SetNegativeFlag(negFlag);
+	NesDebugger::sStatusReg.SetCarryFlag(carryFlag);
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(byteToShift);
+	} else {
+		firstArgument.SetData(byteToShift);
+	}
+}
+
+void CpuInstruction::ShiftLeft(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint8_t byteToShift = 0;
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		byteToShift = fromDefault.GetData();
+	} else {
+		if (memoryModRegister != nullptr)
+		{
+			firstArgument.ModifyMemory(*memoryModRegister);
+		}
+		byteToShift = firstArgument.GetData();
+	}
+	bool carryFlag = byteToShift & 0x10000000;
+	byteToShift = byteToShift << 1;
+	bool negFlag = byteToShift & 0x10000000;
+
+	NesDebugger::sStatusReg.SetZeroFlag(byteToShift == 0);
+	NesDebugger::sStatusReg.SetNegativeFlag(negFlag);
+	NesDebugger::sStatusReg.SetCarryFlag(carryFlag);
+	if (firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed)
+	{
+		fromDefault.SetData(byteToShift);
+	} else {
+		firstArgument.SetData(byteToShift);
+	}
+}
+
+void CpuInstruction::PopByteFromStack(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+
+	toDefault.SetData(NesDebugger::PopByteFromStack());
+}
+
+void CpuInstruction::PopByteFromStackNegZero(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+
+	toDefault.SetData(NesDebugger::PopByteFromStack());
+	NesDebugger::sStatusReg.SetZeroFlag(toDefault.IsZero());
+	NesDebugger::sStatusReg.SetNegativeFlag(toDefault.IsNegative());
+}
+
+void CpuInstruction::PushByteToStack(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	NesDebugger::PushByteToStack(fromDefault.GetData());
+}
+
+void CpuInstruction::JumpFromSubroutine(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint16_t toAddress = NesDebugger::PopByteFromStack();
+	toAddress = toAddress << 8;
+	toAddress |= NesDebugger::PopByteFromStack();
+	SetActiveInstructionByMemoryAddress(toAddress + 3);
+}
+
+void CpuInstruction::JumpToSubroutine(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint16_t curOp = NesDebugger::mInstructionList[NesDebugger::mActiveInstruction].GetAddress();
+	uint8_t lowByte = curOp & 0xFF;
+	uint8_t highByte = (curOp >> 8) & 0xFF;
+	NesDebugger::PushByteToStack(lowByte);
+	NesDebugger::PushByteToStack(highByte);
+	SetActiveInstructionByMemoryAddress(firstArgument.GetMemoryLocation());
+}
+
+void CpuInstruction::BranchIfOverflowClear(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(!NesDebugger::sStatusReg.GetOverflowFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfOverflowSet(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(NesDebugger::sStatusReg.GetOverflowFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfPositive(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(!NesDebugger::sStatusReg.GetNegativeFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfMinus(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(NesDebugger::sStatusReg.GetNegativeFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfCarrySet(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(NesDebugger::sStatusReg.GetCarryFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfCarryClear(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(!NesDebugger::sStatusReg.GetCarryFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfNotEqualInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(!NesDebugger::sStatusReg.GetZeroFlag(), firstArgument);
+}
+
+void CpuInstruction::BranchIfEqualInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	CpuInstruction::ConditionalBranch(NesDebugger::sStatusReg.GetZeroFlag(), firstArgument);
+}
+
+void CpuInstruction::ConditionalBranch(bool shouldJump, GenericInstructionTarget& firstArgument)
+{
+	if (shouldJump)
+	{
+		uint16_t memoryToJumpTo = NesDebugger::mInstructionList[NesDebugger::mActiveInstruction].mAddress;
+		int8_t offset = int8_t(firstArgument.GetMemoryLocation()); //unlike most memory types, offset may be negative
+		memoryToJumpTo += offset;
+		SetActiveInstructionByMemoryAddress(memoryToJumpTo);
+	}
+}
+
+void CpuInstruction::JumpInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
+{
+	UNREFERENCED_PARAMETER(memoryModRegister);
+	UNREFERENCED_PARAMETER(fromDefault);
+	UNREFERENCED_PARAMETER(toDefault);
+
+	uint16_t toIndex = firstArgument.GetMemoryLocation();
+	SetActiveInstructionByMemoryAddress(toIndex);
+}
+
+void CpuInstruction::SetActiveInstructionByMemoryAddress(uint16_t address)
+{
+	auto result = NesDebugger::sOperations.find(address);
+	assert(result != NesDebugger::sOperations.end());
+	NesDebugger::mActiveInstruction = result->second - 1;
+}
 
 void CpuInstruction::BitTestInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
 {
@@ -218,8 +700,8 @@ CpuInstruction::CpuInstruction(uint8_t opcode, GenericInstructionTarget firstTar
 {
 }
 
-CpuInstruction::CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation)
-	:mOpCode(opcode), mDescription(description)
+CpuInstruction::CpuInstruction(uint8_t opcode, const OperationDescription& description, uint8_t* argumentLocation, uint16_t address)
+	:mOpCode(opcode), mDescription(description), mAddress(address)
 {
 	uint16_t inArgData = 0;
 	if (mDescription.mBytes == 2) {
@@ -285,8 +767,14 @@ void CpuInstruction::GetArgumentDescription(std::string& stringToAppendTo)
 		break;
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
+	case GenericInstructionTarget::EIndirect:
 		stringToAppendTo.append("(");
 		NesDebugger::PopulateCharBufferWithHex(fullAddress, mFirstArgument.GetLiteralData());
+		break;
+	case GenericInstructionTarget::ERelative:
+		stringToAppendTo.append("*");
+		stringToAppendTo.append(std::to_string(int8_t(mFirstArgument.GetMemoryLocation())));
+		return;
 		break;
 	case GenericInstructionTarget::EMax:
 		throw(std::exception("Max Instruction flying around"));
