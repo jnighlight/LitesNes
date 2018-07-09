@@ -1,26 +1,43 @@
-#include "Ram.h"
 #include "pch.h"
+#include "Nametable.h"
 #include <ctype.h>
-#include "Ram.h"
+#include "Nametable.h"
 #include "imgui.h"
 #include "NesDebugger.h"
 
-Ram::Ram()
-	:Ram("DefaultName")
+Nametable::Nametable()
+	:Nametable("DefaultName")
 {}
 
-Ram::Ram(std::string name)
+Nametable::Nametable(std::string name)
 	:mName(name), mHiddenName("##")
 {
 	mHiddenName = "##";
 	mHiddenName.append(mName);
+	/*
+	for (uint32_t i = 0; i < 2048; ++i)
+	{
+		mData[i] += uint8_t(i);
+	}*/
 }
 
-Ram::~Ram()
+Nametable::~Nametable()
 {
 }
 
-void Ram::SetMemoryByLocation(uint16_t memoryLocation, uint8_t data)
+void Nametable::Add(uint8_t addition)
+{
+	addition;
+	//mData += addition;
+}
+
+void Nametable::Subtract(uint8_t subtraction)
+{
+	subtraction;
+	//mData -= subtraction;
+}
+
+void Nametable::SetMemoryByLocation(uint16_t memoryLocation, uint8_t data)
 {
 	if (memoryLocation > 1024 * 2) {
 		throw std::exception("trying to set out of bounds memory location");
@@ -28,7 +45,7 @@ void Ram::SetMemoryByLocation(uint16_t memoryLocation, uint8_t data)
 	mData[memoryLocation] = data;
 }
 
-uint8_t Ram::GetMemoryByLocation(uint16_t memoryLocation)
+uint8_t Nametable::GetMemoryByLocation(uint16_t memoryLocation)
 {
 	if (memoryLocation > 1024 * 2) {
 		throw std::exception("trying to set out of bounds memory location");
@@ -36,7 +53,7 @@ uint8_t Ram::GetMemoryByLocation(uint16_t memoryLocation)
 	return mData[memoryLocation];
 }
 
-void Ram::Render()
+void Nametable::Render()
 {
 	ImGui::BeginGroup();
 	uint32_t index = 0;

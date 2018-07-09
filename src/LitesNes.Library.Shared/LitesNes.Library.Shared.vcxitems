@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AttributeTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstruction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.h" />
@@ -22,7 +23,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_impl_dx11.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)imgui_internal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IncludeClass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PPU.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Register.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rom.h" />
@@ -33,6 +37,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AttributeTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstruction.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.cpp" />
@@ -48,7 +53,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IncludeClass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PPU.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Register.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rom.cpp" />

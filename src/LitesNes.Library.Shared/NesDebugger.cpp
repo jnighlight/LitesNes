@@ -19,7 +19,6 @@ std::map<uint16_t, uint16_t> NesDebugger::sOperations;
 NesDebugger::NesDebugger()
 {
 	mSPReg.Set(0xFD);
-	//mStack.reserve(256);
 }
 
 NesDebugger::~NesDebugger()

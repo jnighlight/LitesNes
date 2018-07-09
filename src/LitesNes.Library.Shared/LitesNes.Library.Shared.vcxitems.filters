@@ -37,6 +37,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rom.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PPU.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AttributeTable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -61,5 +65,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GenericInstructionTarget.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rom.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PPU.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AttributeTable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
   </ItemGroup>
 </Project>
