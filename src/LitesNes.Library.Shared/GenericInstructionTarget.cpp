@@ -44,8 +44,8 @@ bool GenericInstructionTarget::IsNegative()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
-			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
+			CheckForSpecialAddress();
 			mHasBeenModified = true;
 		}
 		return ByteHelper::IsNegative(mDataSource.mRam->GetMemoryByLocation(mModifiedByte));
@@ -77,8 +77,8 @@ bool GenericInstructionTarget::IsZero()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
-			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
+			CheckForSpecialAddress();
 			mHasBeenModified = true;
 		}
 		return ByteHelper::IsZero(mDataSource.mRam->GetMemoryByLocation(mModifiedByte));
@@ -93,7 +93,6 @@ bool GenericInstructionTarget::IsZero()
 
 uint8_t GenericInstructionTarget::GetData()
 {
-	CheckForSpecialAddress();
 	switch (mTargetType)
 	{
 	case GenericInstructionTarget::EInvalid:
@@ -114,8 +113,8 @@ uint8_t GenericInstructionTarget::GetData()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
-			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
+			CheckForSpecialAddress();
 			mHasBeenModified = true;
 		}
 		return mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
@@ -227,6 +226,60 @@ void GenericInstructionTarget::CheckForSpecialAddress()
 	}
 }
 
+bool GenericInstructionTarget::SetAtSpecialAddress(uint8_t data, uint16_t address)
+{
+	if (address >= 0x0800 && address <= 0x1FFF) {
+		address = address % 0x0800;
+	}
+	if (address >= 0x2008 && address <= 0x3FFF) {
+		address = 0x2000 + (address % 0x0008);
+	}
+	if ((address >= 0x2000 && address <= 0x2007) || address == 0x4014) {
+		switch (address)
+		{
+		case 0x2000:
+			PPU::PPUCTRL.Set(data);
+			return true;
+			break;
+		case 0x2001:
+			PPU::PPUMASK.Set(data);
+			return true;
+			break;
+		case 0x2002:
+			PPU::PPUSTATUS.Set(data);
+			return true;
+			break;
+		case 0x2003:
+			PPU::OAMADDR.Set(data);
+			return true;
+			break;
+		case 0x2004:
+			PPU::OAMDATA.Set(data);
+			return true;
+			break;
+		case 0x2005:
+			PPU::PPUSCROLL.Set(data);
+			return true;
+			break;
+		case 0x2006:
+			PPU::PPUADDR.Set(data);
+			return true;
+			break;
+		case 0x2007:
+			PPU::PPUDATA.Set(data);
+			return true;
+			break;
+		case 0x4014:
+			PPU::OAMDMA.Set(data);
+			return true;
+			break;
+		default:
+			break;
+		}
+	}
+	return false;
+}
+
 void GenericInstructionTarget::SetData(uint8_t data)
 {
 	uint16_t actualAddress = 0;
@@ -281,6 +334,9 @@ void GenericInstructionTarget::SetData(uint8_t data)
 
 void GenericInstructionTarget::SetData(uint8_t data, uint16_t location)
 {
+	if (SetAtSpecialAddress(data, location)) {
+		return;
+	}
 	switch (mTargetType)
 	{
 	case GenericInstructionTarget::EInvalid:

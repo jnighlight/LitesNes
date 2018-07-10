@@ -8,7 +8,7 @@ public:
 	StatusRegister(std::string name);
 	virtual ~StatusRegister();
 
-	void Render();
+	virtual void Render();
 	void SetZeroFlag(bool zeroFlag);
 	bool GetZeroFlag();
 	void SetNegativeFlag(bool negativeFlag);

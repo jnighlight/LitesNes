@@ -61,6 +61,7 @@ public:
 	};
 
 	void CheckForSpecialAddress();
+	bool SetAtSpecialAddress(uint8_t data, uint16_t address);
 
 private:
 	TargetType mTargetType = EInvalid;

@@ -42,6 +42,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PatternTables.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AddressRegister.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WritingRegister.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OAMRegister.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -71,5 +74,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PatternTables.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AddressRegister.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WritingRegister.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OAMRegister.cpp" />
   </ItemGroup>
 </Project>

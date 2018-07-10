@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "NesDebugger.h"
 #include "imgui.h"
+#include "PPU.h"
 
 StatusRegister NesDebugger::sStatusReg = StatusRegister("S");
 Register NesDebugger::mAReg = Register("A");
@@ -151,6 +152,15 @@ void NesDebugger::RenderDebugger()
 		IncrementActiveInstruction();
 		mStepped = true;
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("Toggle Render"))
+	{
+		PPU::mRenderPatternTables = !PPU::mRenderPatternTables;
+	}
+	if (ImGui::Button("Render Table Side"))
+	{
+		PPU::mTableSide = !PPU::mTableSide;
+	}
 	mAReg.Render();
 	ImGui::SameLine();
 	sStatusReg.Render();
@@ -210,6 +220,9 @@ void NesDebugger::RenderMemoryWindow()
 {
 	ImGui::Begin("LitesNesMemory");
 	mRam.Render();
+	ImGui::End();
+	ImGui::Begin("LitesNesVRAM");
+	PPU::VRam.Render();
 	ImGui::End();
 }
 

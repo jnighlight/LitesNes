@@ -1,0 +1,24 @@
+#pragma once
+
+#include <vector>
+#include <iomanip>
+#include <sstream>
+#include <cstddef>
+
+#include "AddressRegister.h"
+
+class WritingRegister : public Register
+{
+public:
+
+	WritingRegister();
+	WritingRegister(std::string name, AddressRegister&);
+	virtual ~WritingRegister();
+
+	virtual void Set(uint8_t inValue) override;
+	virtual void Set(Register& otherReg) override;
+	void Increment() { ++mWriting; };
+	uint16_t GetWriting() { return mWriting; };
+
+protected:
+};

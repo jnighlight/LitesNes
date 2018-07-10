@@ -22,17 +22,19 @@ Ram::~Ram()
 
 void Ram::SetMemoryByLocation(uint16_t memoryLocation, uint8_t data)
 {
+	/*
 	if (memoryLocation > 1024 * 2) {
 		throw std::exception("trying to set out of bounds memory location");
-	}
+	}*/
 	mData[memoryLocation] = data;
 }
 
 uint8_t Ram::GetMemoryByLocation(uint16_t memoryLocation)
 {
+	/*
 	if (memoryLocation > 1024 * 2) {
 		throw std::exception("trying to set out of bounds memory location");
-	}
+	}*/
 	return mData[memoryLocation];
 }
 

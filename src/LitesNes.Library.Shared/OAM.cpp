@@ -44,3 +44,17 @@ void OAM::LoadAllOAM(uint8_t* startLoadLocation)
 		++startLoadLocation;
 	}
 }
+
+void OAM::SetMemoryByLocation(uint16_t address, uint8_t value)
+{
+	assert(address <= 64 * 4);
+	uint8_t* entryDataByByte = reinterpret_cast<uint8_t*>(mEntries);
+	entryDataByByte[address] = value;
+}
+
+uint8_t OAM::GetMemoryByLocation(uint16_t address)
+{
+	assert(address <= 64 * 4);
+	uint8_t* entryDataByByte = reinterpret_cast<uint8_t*>(mEntries);
+	return entryDataByByte[address];
+}

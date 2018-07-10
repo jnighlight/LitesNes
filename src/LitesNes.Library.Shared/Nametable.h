@@ -14,8 +14,5 @@ public:
 	~Nametable();
 
 private:
-	std::string mName;
-	std::string mHiddenName;
 	uint8_t mData[1024*2];
-	bool mIsAccumulator = false;
 };

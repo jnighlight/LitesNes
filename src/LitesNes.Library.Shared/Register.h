@@ -13,14 +13,14 @@ public:
 	Register(std::string name);
 	virtual ~Register();
 
-	void Render();
+	virtual void Render();
 	void Add(uint8_t addition);
 	void Subtract(uint8_t subtraction);
-	void Set(uint8_t inValue);
-	void Set(Register& otherReg);
+	virtual void Set(uint8_t inValue);
+	virtual void Set(Register& otherReg);
 	bool IsZero() const;
 	bool IsNegative() const;
-	uint8_t GetRegisterContents() { return mData; };
+	virtual uint8_t GetRegisterContents() { return mData; };
 	std::string GetName() { return mName; };
 
 protected:

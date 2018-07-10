@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AddressRegister.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AttributeTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CpuInstruction.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OAMRegister.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PatternTables.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PPU.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
@@ -36,8 +38,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_rect_pack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_textedit.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_truetype.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WritingRegister.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AddressRegister.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AttributeTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ByteHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CpuInstruction.cpp" />
@@ -57,6 +61,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OAMRegister.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PatternTables.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PPU.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
@@ -64,5 +69,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Rom.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RomReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StatusRegister.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WritingRegister.cpp" />
   </ItemGroup>
 </Project>
