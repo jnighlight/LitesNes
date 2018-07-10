@@ -19,7 +19,7 @@ public:
 
 	char* GetPrgRomData() { return mPrgRomData; };
 	uint32_t GetPrgRomDataSize() { return mPrgRomDataSize; };
-	char* getChrRomData() { return mChrRomData; };
+	char* GetChrRomData() { return mChrRomData; };
 	uint32_t GetChrRomDataSize() { return mChrRomDataSize; };
 
 private:

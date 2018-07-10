@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NesDebugger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PatternTables.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PPU.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Ram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Register.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NesDebugger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PatternTables.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PPU.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Ram.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Register.cpp" />

@@ -41,6 +41,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AttributeTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Nametable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OAM.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PatternTables.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)imgui.cpp">
@@ -69,5 +70,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)AttributeTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Nametable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OAM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PatternTables.cpp" />
   </ItemGroup>
 </Project>

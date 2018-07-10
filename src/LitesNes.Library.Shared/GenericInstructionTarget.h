@@ -60,6 +60,8 @@ public:
 		return mModifiedByte;
 	};
 
+	void CheckForSpecialAddress();
+
 private:
 	TargetType mTargetType = EInvalid;
 	uint16_t mLiteralByte = 0;

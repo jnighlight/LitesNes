@@ -2,6 +2,7 @@
 #include "GenericInstructionTarget.h"
 #include "ByteHelper.h"
 #include "NesDebugger.h"
+#include "PPU.h"
 
 GenericInstructionTarget::GenericInstructionTarget()
 {
@@ -43,6 +44,7 @@ bool GenericInstructionTarget::IsNegative()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
+			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
 			mHasBeenModified = true;
 		}
@@ -75,6 +77,7 @@ bool GenericInstructionTarget::IsZero()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
+			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
 			mHasBeenModified = true;
 		}
@@ -90,6 +93,7 @@ bool GenericInstructionTarget::IsZero()
 
 uint8_t GenericInstructionTarget::GetData()
 {
+	CheckForSpecialAddress();
 	switch (mTargetType)
 	{
 	case GenericInstructionTarget::EInvalid:
@@ -110,6 +114,7 @@ uint8_t GenericInstructionTarget::GetData()
 	case GenericInstructionTarget::EIndexedIndirect:
 	case GenericInstructionTarget::EIndirectIndexed:
 		if (!mHasBeenModified) {
+			CheckForSpecialAddress();
 			mModifiedByte = mLiteralByte;
 			mHasBeenModified = true;
 		}
@@ -158,7 +163,6 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 		actualAddress <<= 8;
 		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
 		mModifiedByte = actualAddress;
-		//TODO: Get zero page val, add X to it, then point to the resultant memory
 		break;
 	case GenericInstructionTarget::EIndirectIndexed:
 		mModifiedByte = mLiteralByte;
@@ -168,7 +172,6 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
 		actualAddress += NesDebugger::mYReg.GetRegisterContents();
 		mModifiedByte = actualAddress;
-		//TODO: Get zero page val, store data at location, add Y to it, then point to the resultant memory
 		break;
 	case GenericInstructionTarget::EMax:
 		break;
@@ -176,6 +179,52 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 		throw(std::exception("Wat the fck?"));
 	}
 	mHasBeenModified = true;
+	CheckForSpecialAddress();
+}
+
+void GenericInstructionTarget::CheckForSpecialAddress()
+{
+	if (mModifiedByte >= 0x0800 && mModifiedByte <= 0x1FFF) {
+		mModifiedByte = mModifiedByte % 0x0800;
+	}
+	if ((mModifiedByte >= 0x2000 && mModifiedByte <= 0x2007) || mModifiedByte == 0x4014) {
+		switch (mModifiedByte)
+		{
+		case 0x2000:
+			mDataSource.mRegister = &PPU::PPUCTRL;
+			break;
+		case 0x2001:
+			mDataSource.mRegister = &PPU::PPUMASK;
+			break;
+		case 0x2002:
+			mDataSource.mRegister = &PPU::PPUSTATUS;
+			break;
+		case 0x2003:
+			mDataSource.mRegister = &PPU::OAMADDR;
+			break;
+		case 0x2004:
+			mDataSource.mRegister = &PPU::OAMDATA;
+			break;
+		case 0x2005:
+			mDataSource.mRegister = &PPU::PPUSCROLL;
+			break;
+		case 0x2006:
+			mDataSource.mRegister = &PPU::PPUADDR;
+			break;
+		case 0x2007:
+			mDataSource.mRegister = &PPU::PPUDATA;
+			break;
+		case 0x4014:
+			mDataSource.mRegister = &PPU::OAMDMA;
+			break;
+		default:
+			break;
+		}
+		mTargetType = ERegister;
+	}
+	if (mModifiedByte >= 0x2008 && mModifiedByte <= 0x3FFF) {
+		mModifiedByte = 0x2000 + (mModifiedByte % 0x0008);
+	}
 }
 
 void GenericInstructionTarget::SetData(uint8_t data)
