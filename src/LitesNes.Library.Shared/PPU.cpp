@@ -111,10 +111,10 @@ void PPU::DrawPatternTable(uint32_t* texArray, PatternTables::PatternTable& tabl
 				texArray[texArrayIndex] = 0x00FF00FF;
 				break;
 			case 2:
-				texArray[texArrayIndex] = 0xAAAAAAFF;
+				texArray[texArrayIndex] = 0xBBBBBBFF;
 				break;
 			case 3:
-				texArray[texArrayIndex] = 0xFF00FFFF;
+				texArray[texArrayIndex] = 0x00FFFFFF;
 				break;
 			default:
 				break;
