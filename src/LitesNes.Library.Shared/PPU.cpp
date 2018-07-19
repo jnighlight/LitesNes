@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PPU.h"
 #include <ctype.h>
+#include <cmath>
 #include <vector>
 #include "Ram.h"
 #include "imgui.h"
@@ -23,31 +24,104 @@ bool PPU::mTableSide = true;
 PPU::PPU(uint32_t chrRomSize, char* chrRomPtr)
 	:mPatternTables(chrRomSize, chrRomPtr)
 {
+	OAM::OAMEntry& oam = sOAM.GetEntry(1);
+	oam.yPos = 10;
+	oam.xPos = 10;
+	oam.tileIndex = 12;
+	oam.attributes = 12;
 }
 
 PPU::~PPU()
 {
 }
 
-void PPU::Render()
+void PPU::Render(uint32_t* texArray)
 {
+	texArray;
+	for (uint32_t i = 0; i < 240; ++i)
+	{
+		RenderLine(i, texArray);
+	}
 }
 
-void PPU::RenderLine(uint32_t lineNum)
+void PPU::RenderLine(uint32_t lineNum, uint32_t* texArray)
 {
-	UNREFERENCED_PARAMETER(lineNum);
-	//TODO: Draw background from VRAM (nametables and attribute tables)
-	/*
-	std::vector<OAM::OAMEntry> oamEntries = mOAM.GetCollidingSprites(lineNum);
+	assert(lineNum <= 240);
+	uint32_t* lineStart = texArray + (PPU::ScreenWidth * lineNum);
+
+	std::vector<OAM::OAMEntry> oamEntries = sOAM.GetCollidingSprites(lineNum);
 	if (oamEntries.size() > 8) {
-		//set sprite overflow flag
+		//TODO: set sprite overflow flag
 	}
-	for( auto oamEntry : oamEntries)
+	DrawBackground(lineNum, lineStart);
+	for( OAM::OAMEntry oamEntry : oamEntries)
 	{
-		Sprite sprite = mPatternTables.getPattern(oamEntry);
-		DrawSpriteLine(sprite, oamEntry);
+		DrawSpriteParts(lineNum, lineStart, oamEntry);
 	}
-	*/
+}
+
+void PPU::DrawBackground(uint32_t lineNum, uint32_t* lineToDrawTo)
+{
+	uint16_t nametableLine = uint16_t(lineNum / 8);
+	uint16_t nametableStartingIndex = (256 / 8) * nametableLine;
+	uint16_t xOffset = 0;
+	for (uint8_t i = 0; i < 8; ++i)
+	{
+		PatternTables::PatternTable curTable = mPatternTables.getPatternByIndex(VRam.GetMemoryByLocation(nametableStartingIndex + i), mTableSide ? PatternTables::LEFT : PatternTables::RIGHT);
+		for (uint8_t x = 0; x < 8; ++x)
+		{
+			uint8_t clr = curTable.GetValueByIndex(x, lineNum % 8);
+			uint32_t color = 0;
+			switch (clr)
+			{
+			case 0:
+				color = 0xFFFFFFFF;
+				break;
+			case 1:
+				color = 0x00FF00FF;
+				break;
+			case 2:
+				color = 0xBBBBBBFF;
+				break;
+			case 3:
+				color = 0x00FFFFFF;
+				break;
+			default:
+				break;
+			}
+			lineToDrawTo[xOffset + x] = color;
+		}
+		xOffset += 8;
+	}
+}
+
+void PPU::DrawSpriteParts(uint32_t lineNum, uint32_t* lineToDrawTo, OAM::OAMEntry& oamEntry)
+{
+	uint8_t row = uint8_t(std::abs(int(lineNum) - int(oamEntry.yPos)));
+	PatternTables::PatternTable curTable = mPatternTables.getPatternByIndex(oamEntry.tileIndex, mTableSide ? PatternTables::RIGHT : PatternTables::LEFT);
+	for (uint8_t i = 0; i < 8; ++i)
+	{
+		uint8_t clr = curTable.GetValueByIndex(i, row);
+		uint32_t color = 0;
+		switch (clr)
+		{
+		case 0:
+			continue;
+			break;
+		case 1:
+			color = 0x00FF00FF;
+			break;
+		case 2:
+			color = 0xBBBBBBFF;
+			break;
+		case 3:
+			color = 0x00FFFFFF;
+			break;
+		default:
+			break;
+		}
+		lineToDrawTo[oamEntry.xPos + i] = color;
+	}
 }
 
 void PPU::DrawFromBuffer(uint32_t* texArray)

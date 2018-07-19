@@ -74,6 +74,15 @@ void NesDebugger::PopulateCharBufferWithHex(char* buf, uint8_t byteData)
 	buf[2] = '\00';
 }
 
+void NesDebugger::PopulateCharBufferWithHexNonTerm(char* buf, uint8_t byteData)
+{
+	unsigned char firstNibbleLower = (byteData >> 4);
+	unsigned char secondNibbleLower = (byteData & 0x0F);
+	buf[0] = NibbleToChar(firstNibbleLower);
+	buf[1] = NibbleToChar(secondNibbleLower);
+	buf[2] = ' ';
+}
+
 //Assumes char* buf is of at LEAST length 3. 
 void NesDebugger::PopulateCharBufferWithHex(char* buf, std::byte inByte)
 {

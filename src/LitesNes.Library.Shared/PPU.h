@@ -31,18 +31,22 @@ public:
 	PPU(uint32_t chrRomSize, char* chrRomPtr);
 	~PPU();
 
-	//Nametable mNametables; //2KB of VRAM on NES
 	PatternTables mPatternTables; //Stored on the cartridge, not the internal PPU VRAM
 
-	void Render();
-	void RenderLine(uint32_t lineNum);
+	void Render(uint32_t* texArray);
+	void RenderLine(uint32_t lineNum, uint32_t* texArray);
 
 	void DrawFromBuffer(uint32_t* texArray);
 	void RenderPatternTables(uint32_t* texArray);
 	void RenderNametables(uint32_t* texArray);
 	void DrawPatternTable(uint32_t* texArray, PatternTables::PatternTable& tableToDraw, uint32_t xOffset, uint32_t yOffset);
+	void DrawBackground(uint32_t lineNum, uint32_t* lineToDrawTo);
+	void DrawSpriteParts(uint32_t lineNum, uint32_t* lineToDrawTo, OAM::OAMEntry& oamEntry);
+
 
 	static bool mRenderPatternTables;
 	static bool mTableSide;
+	const static uint32_t ScreenWidth = 256;
+	const static uint32_t ScreenHeight = 240;
 private:
 };

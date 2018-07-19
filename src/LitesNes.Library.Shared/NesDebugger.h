@@ -44,6 +44,7 @@ public:
 	static void PopulateCharBufferWithHex(char* buf, uint16_t byteData);
 	static void PopulateCharBufferWithHex(char * buf, uint8_t byteData);
 	static void PopulateCharBufferWithHex(char * buf, std::byte byte);
+	static void PopulateCharBufferWithHexNonTerm(char* buf, uint8_t byteData);
 	static void PushByteToStack(uint8_t byte);
 	static uint8_t PopByteFromStack();
 

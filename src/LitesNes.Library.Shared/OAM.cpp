@@ -18,11 +18,12 @@ OAM::~OAM()
 
 std::vector<OAM::OAMEntry> OAM::GetCollidingSprites(uint32_t lineNum)
 {
-	uint32_t spriteRange = lineNum + 8; //Sprites are generally 8 pixels tall
-	std::vector<OAM::OAMEntry> collisionSprites(8); //Assume that we _usually_ won't have more than 8 sprites on a line
+	std::vector<OAM::OAMEntry> collisionSprites; //Assume that we _usually_ won't have more than 8 sprites on a line
 	for (auto oam : mEntries)
 	{
-		if (oam.yPos >= lineNum && oam.yPos <= spriteRange)
+		uint32_t spriteStart = oam.yPos;
+		uint32_t spriteEnd = spriteStart + 6;
+		if ((lineNum >= spriteStart && lineNum <= spriteEnd) && spriteStart != 0)
 		{
 			collisionSprites.push_back(oam);
 		}
