@@ -34,6 +34,12 @@ public:
 			mMemoryLocationBuf = stream.str();
 		}
 	};
+	
+	enum Player
+	{
+		PLAYER1 = 0,
+		PLAYER2
+	};
 
 	NesDebugger();
 	~NesDebugger();
@@ -49,6 +55,8 @@ public:
 	static void PopulateCharBufferWithHexNonTerm(char* buf, uint8_t byteData);
 	static void PushByteToStack(uint8_t byte);
 	static uint8_t PopByteFromStack();
+	static uint8_t GetPlayerButton(NesDebugger::Player player);
+	static void SetStrobe(NesDebugger::Player player, bool strobe);
 
 	static char NibbleToChar(std::byte nybble);
 	
@@ -65,6 +73,10 @@ public:
 	static uint16_t mIRQVector;
 	static uint32_t mCpuTime;
 	static bool sDebug;
+	static bool sPlayer1Strobe;
+	static uint8_t sPlayer1Button;
+	static bool sPlayer2Strobe;
+	static uint8_t sPlayer2Button;
 
 	static Ram mRam;// = Ram("Ram");
 	static std::vector<CpuInstruction> mInstructionList;

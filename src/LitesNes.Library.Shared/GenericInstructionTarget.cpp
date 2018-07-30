@@ -178,15 +178,15 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 		throw(std::exception("Wat the fck?"));
 	}
 	mHasBeenModified = true;
-	CheckForSpecialAddress();
+	//CheckForSpecialAddress();
 }
 
-void GenericInstructionTarget::CheckForSpecialAddress()
+void GenericInstructionTarget::CheckForSpecialAddress(bool justAddress)
 {
 	if (mModifiedByte >= 0x0800 && mModifiedByte <= 0x1FFF) {
 		mModifiedByte = mModifiedByte % 0x0800;
 	}
-	if ((mModifiedByte >= 0x2000 && mModifiedByte <= 0x2007) || mModifiedByte == 0x4014) {
+	if ((mModifiedByte >= 0x2000 && mModifiedByte <= 0x2007) || mModifiedByte == 0x4014 ) {
 		switch (mModifiedByte)
 		{
 		case 0x2000:
@@ -201,15 +201,18 @@ void GenericInstructionTarget::CheckForSpecialAddress()
 			break;
 		case 0x2003:
 			mDataSource.mRegister = &PPU::OAMADDR;
+			//mModifiedByte = PPU::OAMADDR.GetRegisterContents();
 			break;
 		case 0x2004:
 			mDataSource.mRegister = &PPU::OAMDATA;
 			break;
 		case 0x2005:
 			mDataSource.mRegister = &PPU::PPUSCROLL;
+			//mModifiedByte = PPU::PPUSCROLL.GetRegisterContents();wtf
 			break;
 		case 0x2006:
 			mDataSource.mRegister = &PPU::PPUADDR;
+			//mModifiedByte = PPU::PPUADDR.GetRegisterContents();
 			break;
 		case 0x2007:
 			mDataSource.mRegister = &PPU::PPUDATA;
@@ -217,14 +220,53 @@ void GenericInstructionTarget::CheckForSpecialAddress()
 		case 0x4014:
 			mDataSource.mRegister = &PPU::OAMDMA;
 			break;
+			/*
+		case 0x4016:
+			mModifiedByte = NesDebugger::GetPlayerButton(NesDebugger::PLAYER1);
+			break;
+		case 0x4017:
+			mModifiedByte = NesDebugger::GetPlayerButton(NesDebugger::PLAYER2);
+			break;*/
 		default:
 			break;
 		}
 		mTargetType = ERegister;
 	}
+	if (mModifiedByte >= 0x4016 && mModifiedByte <= 0x4017 && !justAddress)
+	{
+		if (mModifiedByte == 0x4016)
+		{
+			mModifiedByte = NesDebugger::GetPlayerButton(NesDebugger::PLAYER1);
+		}
+		if (mModifiedByte == 0x4017)
+		{
+			mModifiedByte = NesDebugger::GetPlayerButton(NesDebugger::PLAYER2);
+		}
+	}
 	if (mModifiedByte >= 0x2008 && mModifiedByte <= 0x3FFF) {
 		mModifiedByte = 0x2000 + (mModifiedByte % 0x0008);
 	}
+}
+
+bool GenericInstructionTarget::SetFromSpecialAddress(uint8_t& data, uint16_t address)
+{
+	if (address == 0x4016 || address == 0x4017) {
+		switch (address)
+		{
+		case 0x4016:
+			data = NesDebugger::GetPlayerButton(NesDebugger::PLAYER1);
+			return true;
+			break;
+		case 0x4017:
+			data = NesDebugger::GetPlayerButton(NesDebugger::PLAYER2);
+			return true;
+			break;
+
+		default:
+			break;
+		}
+	}
+	return false;
 }
 
 bool GenericInstructionTarget::SetAtSpecialAddress(uint8_t data, uint16_t address)
@@ -235,7 +277,7 @@ bool GenericInstructionTarget::SetAtSpecialAddress(uint8_t data, uint16_t addres
 	if (address >= 0x2008 && address <= 0x3FFF) {
 		address = 0x2000 + (address % 0x0008);
 	}
-	if ((address >= 0x2000 && address <= 0x2007) || address == 0x4014) {
+	if ((address >= 0x2000 && address <= 0x2007) || address == 0x4014 || address == 0x4016 || address == 0x4017) {
 		switch (address)
 		{
 		case 0x2000:
@@ -274,6 +316,15 @@ bool GenericInstructionTarget::SetAtSpecialAddress(uint8_t data, uint16_t addres
 			PPU::OAMDMA.Set(data);
 			return true;
 			break;
+		case 0x4016:
+			NesDebugger::SetStrobe(NesDebugger::PLAYER1, (data & 0x1));
+			return true;
+			break;
+		case 0x4017:
+			NesDebugger::SetStrobe(NesDebugger::PLAYER2, (data & 0x1));
+			return true;
+			break;
+
 		default:
 			break;
 		}
@@ -335,8 +386,12 @@ void GenericInstructionTarget::SetData(uint8_t data)
 
 void GenericInstructionTarget::SetData(uint8_t data, uint16_t location)
 {
-	if (SetAtSpecialAddress(data, location)) {
+	if (mTargetType != GenericInstructionTarget::ERegister && SetAtSpecialAddress(data, location)) {
 		return;
+	}
+	if (mTargetType == GenericInstructionTarget::ERegister)
+	{
+		SetFromSpecialAddress(data, location);
 	}
 	switch (mTargetType)
 	{

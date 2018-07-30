@@ -52,17 +52,18 @@ public:
 	bool IsZero();
 	bool IsNegative();
 	void ModifyMemory(Register& registerToModifyBy);
-	uint16_t GetMemoryLocation() {
+	uint16_t GetMemoryLocation(bool justAddress = false) {
 		if (!mHasBeenModified) {
 			mModifiedByte = mLiteralByte;
 			mHasBeenModified = true;
-			CheckForSpecialAddress();
+			CheckForSpecialAddress(justAddress);
 		}
 		return mModifiedByte;
 	};
 
-	void CheckForSpecialAddress();
+	void CheckForSpecialAddress(bool justAddress = false);
 	bool SetAtSpecialAddress(uint8_t data, uint16_t address);
+	bool SetFromSpecialAddress(uint8_t& data, uint16_t address);
 
 private:
 	TargetType mTargetType = EInvalid;

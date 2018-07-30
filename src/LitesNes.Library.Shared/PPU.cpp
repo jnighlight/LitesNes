@@ -7,6 +7,12 @@
 #include "imgui.h"
 #include "NesDebugger.h"
 
+PPU::PPUColor PPU::Colors[0x40] = {
+	{84,84,84},    {0,30,116}, {8,16,144},  {48,0,136},  {68, 0, 100}, {92, 0, 48},  {84, 4, 0},    {60,24,0},  {32,42,0}, {8,58,0},   {0,64,0},  {0,60,0},   {0,50,60},   {0,0,0},{0,0,0},{0,0,0},
+	{152,150,152}, {8,76,196}, {48,50,236}, {92,30,228}, {136,20,176}, {160,20,100}, {152, 34, 32}, {120,60,0}, {84,90,0}, {40,114,0}, {8,124,0}, {0,118,40}, {0,102,120}, {0,0,0},{0,0,0},{0,0,0},
+	{236,238,236},  {76,154,236}, {120,124,236}, {176,98,236}, {228,84,236}, {236,88,180}, {236,106,100}, {212,136,32}, {160,170,0}, {116,196,0},  {76,208,32},  {56,204,108},  {56,180,204},  {60,60, 60},{0,0,0},{0,0,0},
+	{236,238,236}, {168,204,236}, {188,188,236}, {212,178,236}, {236,174,236}, {236,174,212}, {236,180,176}, {228,196,144}, {204,210,120}, {180,222,120}, {168,226,144}, {152,226,180}, {160,214,228}, {160,162,160},{0,0,0},{0,0,0}
+};
 Ram PPU::VRam = Ram("VRam");
 OAM PPU::sOAM;
 Register PPU::PPUCTRL = Register("PPUCTRL");
@@ -54,16 +60,25 @@ void PPU::RenderLine(uint32_t lineNum, uint32_t* texArray)
 	}
 }
 
+/*
+void PPU::GetPalette(uint16_t row, uint8_t column)
+{
+	uint16_t startingPoint = 0x23C0;
+}*/
+
 void PPU::DrawBackground(uint32_t lineNum, uint32_t* lineToDrawTo)
 {
 	uint16_t nametableLine = uint16_t(lineNum / 8);
 	uint16_t nametableStartingIndex = ((256 / 8) * nametableLine) + 0x2000;
+	//uint16_t attributeTableStartingIndex = nametableStartingIndex 
 	uint16_t xOffset = 0;
 	for (uint8_t i = 0; i < 32; ++i)
 	{
 		PatternTables::PatternTable curTable = mPatternTables.getPatternByIndex(VRam.GetMemoryByLocation(nametableStartingIndex + i), mTableSide ? PatternTables::LEFT : PatternTables::RIGHT);
 		for (uint8_t x = 0; x < 8; ++x)
 		{
+			//uint8_t palette = GetPalette(nametableLine, i);
+			//uint8_t* palette = ; get nametable palette (attribute table)
 			uint8_t clr = curTable.GetValueByIndex(x, lineNum % 8);
 			uint32_t color = 0;
 			switch (clr)
@@ -93,28 +108,31 @@ void PPU::DrawSpriteParts(uint32_t lineNum, uint32_t* lineToDrawTo, OAM::OAMEntr
 {
 	uint8_t row = uint8_t(std::abs(int(lineNum) - int(oamEntry.yPos)));
 	PatternTables::PatternTable curTable = mPatternTables.getPatternByIndex(oamEntry.tileIndex, mTableSide ? PatternTables::RIGHT : PatternTables::LEFT);
+	uint8_t paletteNum = oamEntry.attributes & 0b00000011;
+	uint8_t* palette = PPU::VRam.GetRamPtr() + 0x3F11 + ((4 * paletteNum));
 	for (uint8_t i = 0; i < 8; ++i)
 	{
-		uint8_t clr = curTable.GetValueByIndex(i, row);
-		uint32_t color = 0;
-		switch (clr)
+		uint8_t color = curTable.GetValueByIndex(i, row);
+		uint8_t* index = palette + (color-1);
+		uint32_t finalColor = 0;
+		switch (color)
 		{
 		case 0:
 			continue;
 			break;
 		case 1:
-			color = 0x00FF00FF;
+			finalColor = PPU::Colors[*index].GetColor();
 			break;
 		case 2:
-			color = 0xBBBBBBFF;
+			finalColor = PPU::Colors[*index].GetColor();
 			break;
 		case 3:
-			color = 0x00FFFFFF;
+			finalColor = PPU::Colors[*index].GetColor();
 			break;
 		default:
 			break;
 		}
-		lineToDrawTo[oamEntry.xPos + i] = color;
+		lineToDrawTo[oamEntry.xPos + i] = finalColor;
 	}
 }
 

@@ -15,6 +15,10 @@ uint16_t NesDebugger::mResetVector = 0;
 uint16_t NesDebugger::mIRQVector = 0;
 uint32_t NesDebugger::mCpuTime = 0;
 bool NesDebugger::sDebug = true;
+bool NesDebugger::sPlayer1Strobe = true;
+uint8_t NesDebugger::sPlayer1Button = 0;
+bool NesDebugger::sPlayer2Strobe = true;
+uint8_t NesDebugger::sPlayer2Button = 0;
 
 uint32_t NesDebugger::mActiveInstruction = 0;
 std::vector<CpuInstruction> NesDebugger::mInstructionList;
@@ -42,8 +46,9 @@ void NesDebugger::Update()
 {
 	if (mRunning) {
 		//for (uint32_t i = 0; i < 2000; ++i)
-		while (!IncrementActiveInstruction())
+		while (!IncrementActiveInstruction()) //Timing
 		{
+			//IncrementActiveInstruction(); //timing
 			mStepped = true;
 			if (mInstructionList[mActiveInstruction].GetIsBreakpoint())
 			{
@@ -67,7 +72,7 @@ void NesDebugger::LogInstruction(CpuInstruction & instruction)
 	argDesc.append(instruction.GetOperationName());
 	argDesc.append(" ");
 	argDesc.append(outString);
-	uint32_t strSize = argDesc.length();
+	uint32_t strSize = uint32_t(argDesc.length());
 
 	debugFile << std::hex << instruction.GetAddress() << "  " << instruction.GetPrettyHexRep() << "   " << argDesc;
 	for (uint32_t i = 0; i < 30 - strSize; ++i)
@@ -92,7 +97,9 @@ void NesDebugger::LogInstruction(CpuInstruction & instruction)
 bool NesDebugger::IncrementActiveInstruction()
 {
 	//LogInstruction(mInstructionList[mActiveInstruction]);
-	if (mInstructionList[mActiveInstruction].GetAddress() == 0xf4ed)
+	if (mInstructionList[mActiveInstruction].GetAddress() == 0xf4ed) // Donkey Kong
+	//if (mInstructionList[mActiveInstruction].GetAddress() == 0xc427) // Tennis - not working
+	//if (false)
 	{
 		CpuInstruction::NMIInterrupt();
 		return true;
@@ -168,6 +175,103 @@ uint8_t NesDebugger::PopByteFromStack()
 	NesDebugger::mSPReg.Add(1);
 	uint8_t popped = NesDebugger::mStack[NesDebugger::mSPReg.GetRegisterContents()];
 	return popped;
+}
+
+void NesDebugger::SetStrobe(NesDebugger::Player player, bool strobe)
+{
+	if (player == PLAYER1)
+	{
+		sPlayer1Strobe = strobe;
+		if (sPlayer1Strobe)
+		{
+			sPlayer1Button = 0;
+		}
+	}
+}
+
+uint8_t NesDebugger::GetPlayerButton(NesDebugger::Player player)
+{
+	uint8_t retVal = 0;
+	if (player == PLAYER1)
+	{
+		if (sPlayer1Strobe)
+		{
+			if (GetKeyState('A') & 0x8000/*check if high-order bit is set (1 << 15)*/)
+			{
+				retVal |= 1;
+			}
+		}
+		else
+		{
+			switch (sPlayer1Button)
+			{
+			case 0:
+				if (GetKeyState('A') & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 1:
+				if (GetKeyState('B') & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 2:
+				if (GetKeyState(VK_CONTROL) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 3:
+				if (GetKeyState(VK_RETURN) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 4:
+				if (GetKeyState(VK_UP) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 5:
+				if (GetKeyState(VK_DOWN) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 6:
+				if (GetKeyState(VK_LEFT) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			case 7:
+				if (GetKeyState(VK_RIGHT) & 0x8000/*check if high-order bit is set (1 << 15)*/)
+				{
+					retVal |= 1;
+				}
+				++sPlayer1Button;
+				break;
+			default:
+				retVal |= 1;
+				break;
+			}
+		}
+	}
+	else
+	{
+
+	}
+	return retVal;
 }
 
 char NesDebugger::NibbleToChar(std::byte nybble)

@@ -627,6 +627,7 @@ void CpuInstruction::SetActiveInstructionByMemoryAddressNoOffset(uint16_t addres
 
 void CpuInstruction::BitTestInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
 {
+	UNREFERENCED_PARAMETER(memoryModRegister);
 	UNREFERENCED_PARAMETER(fromDefault);
 
 	assert(memoryModRegister == nullptr);
@@ -678,6 +679,8 @@ void CpuInstruction::AndOperationInstruction(GenericInstructionTarget& firstArgu
 
 void CpuInstruction::TransferRegisterInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
 {
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
 	assert(firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed);
 	assert(memoryModRegister == nullptr);
 	toDefault.SetData(fromDefault.GetData());
@@ -687,6 +690,8 @@ void CpuInstruction::TransferRegisterInstruction(GenericInstructionTarget& first
 
 void CpuInstruction::TransferRegisterInstructionNoFlag(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
 {
+	UNREFERENCED_PARAMETER(firstArgument);
+	UNREFERENCED_PARAMETER(memoryModRegister);
 	assert(firstArgument.GetTargetType() == GenericInstructionTarget::TargetType::ENotUsed);
 	assert(memoryModRegister == nullptr);
 	toDefault.SetData(fromDefault.GetData());
@@ -697,7 +702,7 @@ void CpuInstruction::StoreDataInstruction(GenericInstructionTarget& firstArgumen
 	if (memoryModRegister != nullptr) {
 		firstArgument.ModifyMemory(*memoryModRegister);
 	}
-	toDefault.SetData(fromDefault.GetData(), firstArgument.GetMemoryLocation());
+	toDefault.SetData(fromDefault.GetData(), firstArgument.GetMemoryLocation(true));
 }
 
 void CpuInstruction::LoadDataInstruction(GenericInstructionTarget& firstArgument, Register* memoryModRegister, GenericInstructionTarget& fromDefault, GenericInstructionTarget& toDefault)
@@ -708,7 +713,7 @@ void CpuInstruction::LoadDataInstruction(GenericInstructionTarget& firstArgument
 	{
 		firstArgument.ModifyMemory(*memoryModRegister);
 	}
-	toDefault.SetData(firstArgument.GetData(), firstArgument.GetMemoryLocation());
+	toDefault.SetData(firstArgument.GetData(), firstArgument.GetMemoryLocation(true));
 	NesDebugger::sStatusReg.SetZeroFlag(toDefault.IsZero());
 	NesDebugger::sStatusReg.SetNegativeFlag(toDefault.IsNegative());
 }
