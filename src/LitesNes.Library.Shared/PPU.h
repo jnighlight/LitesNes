@@ -24,7 +24,7 @@ public:
 	static AddressRegister PPUSCROLL;
 	static AddressRegister PPUADDR;
 	static WritingRegister PPUDATA;
-	static Register OAMDMA;
+	static OAMRegister OAMDMA;
 	static Ram VRam;
 	static OAM sOAM; //Held on the internal PPU memory
 

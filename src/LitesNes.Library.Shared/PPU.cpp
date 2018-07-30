@@ -11,24 +11,19 @@ Ram PPU::VRam = Ram("VRam");
 OAM PPU::sOAM;
 Register PPU::PPUCTRL = Register("PPUCTRL");
 Register PPU::PPUMASK = Register("PPUMASK");
-Register PPU::PPUSTATUS = Register("PPUSTATUS");
+Register PPU::PPUSTATUS = Register("PPUSTATUS", 0x80);
 AddressRegister PPU::OAMADDR = AddressRegister("OAMADDR");
 OAMRegister PPU::OAMDATA = OAMRegister("OAMDATA", PPU::OAMADDR, PPU::sOAM);
 AddressRegister PPU::PPUSCROLL = AddressRegister("PPUSCROLL");
 AddressRegister PPU::PPUADDR = AddressRegister("PPUADDR");
 WritingRegister PPU::PPUDATA = WritingRegister("PPUDATA", PPU::PPUADDR, PPU::VRam);
-Register PPU::OAMDMA = Register("OAMDMA"); //TODO: set this sucker up to do full AOM setups
-bool PPU::mRenderPatternTables = true;
-bool PPU::mTableSide = true;
+OAMRegister PPU::OAMDMA = OAMRegister("OAMDMA", PPU::OAMADDR, PPU::sOAM); //TODO: set this sucker up to do full AOM setups
+bool PPU::mRenderPatternTables = false;
+bool PPU::mTableSide = false;
 
 PPU::PPU(uint32_t chrRomSize, char* chrRomPtr)
 	:mPatternTables(chrRomSize, chrRomPtr)
 {
-	OAM::OAMEntry& oam = sOAM.GetEntry(1);
-	oam.yPos = 10;
-	oam.xPos = 10;
-	oam.tileIndex = 12;
-	oam.attributes = 12;
 }
 
 PPU::~PPU()
@@ -37,7 +32,6 @@ PPU::~PPU()
 
 void PPU::Render(uint32_t* texArray)
 {
-	texArray;
 	for (uint32_t i = 0; i < 240; ++i)
 	{
 		RenderLine(i, texArray);
@@ -63,9 +57,9 @@ void PPU::RenderLine(uint32_t lineNum, uint32_t* texArray)
 void PPU::DrawBackground(uint32_t lineNum, uint32_t* lineToDrawTo)
 {
 	uint16_t nametableLine = uint16_t(lineNum / 8);
-	uint16_t nametableStartingIndex = (256 / 8) * nametableLine;
+	uint16_t nametableStartingIndex = ((256 / 8) * nametableLine) + 0x2000;
 	uint16_t xOffset = 0;
-	for (uint8_t i = 0; i < 8; ++i)
+	for (uint8_t i = 0; i < 32; ++i)
 	{
 		PatternTables::PatternTable curTable = mPatternTables.getPatternByIndex(VRam.GetMemoryByLocation(nametableStartingIndex + i), mTableSide ? PatternTables::LEFT : PatternTables::RIGHT);
 		for (uint8_t x = 0; x < 8; ++x)
@@ -153,7 +147,7 @@ void PPU::RenderNametables(uint32_t* texArray)
 {
 	uint32_t drawX = 0;
 	uint32_t drawY = 0;
-	uint16_t nameTableIndex = 0;
+	uint16_t nameTableIndex = 0x2000;
 
 	for (uint32_t i = 0; i < 30; ++i)
 	{

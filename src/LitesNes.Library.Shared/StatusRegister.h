@@ -19,4 +19,6 @@ public:
 	bool GetCarryFlag();
 	void SetOverflowFlag(bool overflowFlag);
 	bool GetOverflowFlag();
+	void SetDecimalFlag(bool decimalFlag);
+	bool GetDecimalFlag();
 };

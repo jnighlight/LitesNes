@@ -55,11 +55,12 @@ void Ram::Render()
 	}
 	ImGui::EndGroup();
 	rerenderCount++;
+	/*
 	if (rerenderCount > 120)
 	{
 		UpdateCachedRamString();
 		rerenderCount = 0;
-	}
+	}*/
 }
 
 void Ram::UpdateCachedRamString()
@@ -72,7 +73,7 @@ void Ram::UpdateCachedRamString()
 	char text[(3 * 16) + 2];
 	char asciiChar[(2 * 16) + 2];
 	uint32_t index = 0;
-	for (int line = 0; line < 4095; line++)
+	for (int line = 0; line < 4096; line++)
 	{
 		std::string& mCachedRamString = mCachedRamStrings[line / 32];
 		mCachedRamString.append("RAM ");

@@ -56,6 +56,7 @@ public:
 		if (!mHasBeenModified) {
 			mModifiedByte = mLiteralByte;
 			mHasBeenModified = true;
+			CheckForSpecialAddress();
 		}
 		return mModifiedByte;
 	};

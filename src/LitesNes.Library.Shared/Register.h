@@ -10,7 +10,7 @@ class Register
 public:
 
 	Register();
-	Register(std::string name);
+	Register(std::string name, uint8_t data = 0);
 	virtual ~Register();
 
 	virtual void Render();
@@ -26,6 +26,6 @@ public:
 protected:
 	std::string mName;
 	std::string mHiddenName;
-	uint8_t mData;
+	uint8_t mData = 0;
 	bool mIsAccumulator = false;
 };

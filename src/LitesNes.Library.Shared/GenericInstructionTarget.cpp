@@ -158,7 +158,7 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 	case GenericInstructionTarget::EIndexedIndirect:
 		mModifiedByte = mLiteralByte + NesDebugger::mXReg.GetRegisterContents();
 		mModifiedByte &= 0xFF;
-		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1 & 0xFF);
 		actualAddress <<= 8;
 		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
 		mModifiedByte = actualAddress;
@@ -166,7 +166,7 @@ void GenericInstructionTarget::ModifyMemory(Register& registerToModifyBy)
 	case GenericInstructionTarget::EIndirectIndexed:
 		mModifiedByte = mLiteralByte;
 		mModifiedByte &= 0xFF;
-		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1);
+		actualAddress = mDataSource.mRam->GetMemoryByLocation(mModifiedByte+1 & 0xFF);
 		actualAddress <<= 8;
 		actualAddress |= mDataSource.mRam->GetMemoryByLocation(mModifiedByte);
 		actualAddress += NesDebugger::mYReg.GetRegisterContents();
@@ -197,6 +197,7 @@ void GenericInstructionTarget::CheckForSpecialAddress()
 			break;
 		case 0x2002:
 			mDataSource.mRegister = &PPU::PPUSTATUS;
+			mModifiedByte = PPU::PPUSTATUS.GetRegisterContents();
 			break;
 		case 0x2003:
 			mDataSource.mRegister = &PPU::OAMADDR;

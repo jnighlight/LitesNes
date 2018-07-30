@@ -8,8 +8,8 @@
 Register::Register()
 	:Register("DefaultRegName") {};
 
-Register::Register(std::string name)
-	:mName(name), mHiddenName("##")
+Register::Register(std::string name, uint8_t data /*= 0*/)
+	:mName(name), mHiddenName("##"), mData(data)
 {
 	mHiddenName = "##";
 	mHiddenName.append(mName);

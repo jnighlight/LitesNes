@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cstddef>
 #include <stack>
+#include <fstream>
 #include "Register.h"
 #include "StatusRegister.h"
 #include "Ram.h"
@@ -39,6 +40,7 @@ public:
 	void RenderDebugger();
 	void RenderMemoryWindow();
 	void RenderStackWindow();
+	void Init();
 	void Update();
 	void DrawFromBuffer(uint32_t* texArray);
 	static void PopulateCharBufferWithHex(char* buf, uint16_t byteData);
@@ -50,26 +52,35 @@ public:
 
 	static char NibbleToChar(std::byte nybble);
 	
-
 	static uint32_t mActiveInstruction;
 	static StatusRegister sStatusReg;// = StatusRegister("S");
 	static Register mAReg;// = Register("A");
 	static Register mXReg;// = Register("X");
 	static Register mYReg;// = Register("Y");
 	static Register mPCReg;// = Register("PC");
-	static Register mSPReg;// = Register("PC");
-	static std::vector<uint8_t> mStack;
+	static Register mSPReg;// = Register("SP");
+	static uint8_t* mStack;
+	static uint16_t mNMIVector;
+	static uint16_t mResetVector;
+	static uint16_t mIRQVector;
+	static uint32_t mCpuTime;
+	static bool sDebug;
 
 	static Ram mRam;// = Ram("Ram");
 	static std::vector<CpuInstruction> mInstructionList;
+	static std::vector<std::string> mInstructionDescriptionList;
 
 	static std::map<uint16_t, uint16_t> sOperations;
 
 private:
-	void IncrementActiveInstruction();
+	bool IncrementActiveInstruction();
+	void CreateInstructionDescription();
 	static char NibbleToChar(unsigned char nybble);
+	void LogInstruction(CpuInstruction& instruction);
 
 	bool mRunning = false;
 	bool mShouldStep = false;
 	bool mStepped = false;
+	std::string sCpuFilename;
+	std::ofstream debugFile;
 };

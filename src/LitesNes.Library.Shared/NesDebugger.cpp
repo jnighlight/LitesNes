@@ -9,16 +9,28 @@ Register NesDebugger::mXReg = Register("X");
 Register NesDebugger::mYReg = Register("Y");
 Register NesDebugger::mPCReg = Register("PC");
 Register NesDebugger::mSPReg = Register("SP");
-std::vector<uint8_t> NesDebugger::mStack(256);
+uint8_t* NesDebugger::mStack = nullptr;
+uint16_t NesDebugger::mNMIVector = 0;
+uint16_t NesDebugger::mResetVector = 0;
+uint16_t NesDebugger::mIRQVector = 0;
+uint32_t NesDebugger::mCpuTime = 0;
+bool NesDebugger::sDebug = true;
 
 uint32_t NesDebugger::mActiveInstruction = 0;
 std::vector<CpuInstruction> NesDebugger::mInstructionList;
+std::vector<std::string> NesDebugger::mInstructionDescriptionList;
 
 Ram NesDebugger::mRam = Ram("Ram");
 std::map<uint16_t, uint16_t> NesDebugger::sOperations;
 
 NesDebugger::NesDebugger()
 {
+	time_t seconds = time(NULL);
+	std::stringstream ss;
+	ss << seconds;
+	sCpuFilename.append("../../");
+	sCpuFilename.append(ss.str());
+	sCpuFilename.append(".txt");
 	mSPReg.Set(0xFD);
 }
 
@@ -29,24 +41,76 @@ NesDebugger::~NesDebugger()
 void NesDebugger::Update()
 {
 	if (mRunning) {
-		IncrementActiveInstruction();
-		mStepped = true;
-		if (mInstructionList[mActiveInstruction].GetIsBreakpoint())
+		//for (uint32_t i = 0; i < 2000; ++i)
+		while (!IncrementActiveInstruction())
 		{
-			mRunning = false;
+			mStepped = true;
+			if (mInstructionList[mActiveInstruction].GetIsBreakpoint())
+			{
+				mRunning = false;
+				mRam.UpdateCachedRamString();
+				PPU::VRam.UpdateCachedRamString();
+				break;
+			}
 		}
 	}
 }
 
-void NesDebugger::IncrementActiveInstruction()
+void NesDebugger::LogInstruction(CpuInstruction & instruction)
 {
-	mInstructionList[mActiveInstruction].Execute();
-	mActiveInstruction++;
-	if (mActiveInstruction >= mInstructionList.size())
+	debugFile.open (sCpuFilename, std::ios::out | std::ios::app);
+	std::string outString;
+	instruction.GetArgumentDescription(outString);
+
+	std::string argDesc;
+	argDesc.append(" ");
+	argDesc.append(instruction.GetOperationName());
+	argDesc.append(" ");
+	argDesc.append(outString);
+	uint32_t strSize = argDesc.length();
+
+	debugFile << std::hex << instruction.GetAddress() << "  " << instruction.GetPrettyHexRep() << "   " << argDesc;
+	for (uint32_t i = 0; i < 30 - strSize; ++i)
 	{
-		mActiveInstruction = 0;
+		debugFile << " ";
+	}
+	char hexes[5];
+	NesDebugger::PopulateCharBufferWithHex(hexes, NesDebugger::mAReg.GetRegisterContents());
+	debugFile << " A:" << hexes;
+	NesDebugger::PopulateCharBufferWithHex(hexes, NesDebugger::mXReg.GetRegisterContents());
+	debugFile << " X:" << hexes;
+	NesDebugger::PopulateCharBufferWithHex(hexes, NesDebugger::mYReg.GetRegisterContents());
+	debugFile << " Y:" << hexes;
+	NesDebugger::PopulateCharBufferWithHex(hexes, NesDebugger::sStatusReg.GetRegisterContents());
+	debugFile << " P:" << hexes;
+	debugFile << " CYC:" << "XXX";
+	debugFile << "\n";
+	debugFile.close();
+}
+
+
+bool NesDebugger::IncrementActiveInstruction()
+{
+	//LogInstruction(mInstructionList[mActiveInstruction]);
+	if (mInstructionList[mActiveInstruction].GetAddress() == 0xf4ed)
+	{
+		CpuInstruction::NMIInterrupt();
+		return true;
+	} else {
+		mInstructionList[mActiveInstruction].Execute();
+		mActiveInstruction++;
+		if (mActiveInstruction >= mInstructionList.size())
+		{
+			mActiveInstruction = 0;
+		}
 	}
 	mPCReg.Set(uint8_t(mInstructionList[mActiveInstruction].GetAddress()));
+	if (!mRunning)
+	{
+		mRam.UpdateCachedRamString();
+		PPU::VRam.UpdateCachedRamString();
+	}
+	return false;
 }
 
 //Assumes char* buf is of at LEAST length 5. 
@@ -148,6 +212,8 @@ void NesDebugger::RenderDebugger()
 	if (ImGui::Button("Stop"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
 	{
 		mRunning = false;
+		mRam.UpdateCachedRamString();
+		PPU::VRam.UpdateCachedRamString();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Step"))
@@ -161,14 +227,10 @@ void NesDebugger::RenderDebugger()
 		IncrementActiveInstruction();
 		mStepped = true;
 	}
-	ImGui::SameLine();
-	if (ImGui::Button("Toggle Render"))
+	if (ImGui::Button("NMI Interrupt"))
 	{
-		PPU::mRenderPatternTables = !PPU::mRenderPatternTables;
-	}
-	if (ImGui::Button("Render Table Side"))
-	{
-		PPU::mTableSide = !PPU::mTableSide;
+		CpuInstruction::NMIInterrupt();
+		mStepped = true;
 	}
 	mAReg.Render();
 	ImGui::SameLine();
@@ -192,37 +254,67 @@ void NesDebugger::RenderDebugger()
 	totalListSize.y *= 15;
 	size.x *= 4;
 	size.y /= 1.5;
-	if (ImGui::ListBoxHeader("##Instructions", totalListSize))
+	if (!mRunning)
 	{
-		std::string outString;
-		outString.reserve(30);
-		for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
-			outString.clear();
-			if (mInstructionList[i].GetIsBreakpoint()) {
-				outString.append("->");
-			} else {
-				outString.append("  ");
-			}
-			//outString.append(mInstructionList[i].mMemoryLocationBuf);
-			std::stringstream ss;
-			ss << std::hex << std::setw(4) << std::setfill('0') << mInstructionList[i].GetAddress();
-			outString.append(ss.str());
-			outString.append("\t");
-			outString.append(mInstructionList[i].GetOperationName());
-			outString.append("\t");
-			mInstructionList[i].GetArgumentDescription(outString);
-			if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction && !mRunning, 0, size))
-			{
-				mInstructionList[i].ToggleIsBreakpoint();
-			}
-			if (mStepped && i == mActiveInstruction) {
-				ImGui::SetScrollHere(0.25f); // 0.0f:top, 0.5f:center, 1.0f:bottom
-				mStepped = false;
+		if (ImGui::ListBoxHeader("##Instructions", totalListSize))
+		{
+			std::string outString;
+			outString.reserve(30);
+			for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
+				if (ImGui::Selectable(mInstructionDescriptionList[i].c_str(), i == mActiveInstruction && !mRunning, 0, size))
+				{
+					mInstructionList[i].ToggleIsBreakpoint();
+					if (mInstructionList[i].GetIsBreakpoint()) {
+						mInstructionDescriptionList[i][0] = '-';
+						mInstructionDescriptionList[i][1] = '>';
+					}
+					else {
+						mInstructionDescriptionList[i][0] = ' ';
+						mInstructionDescriptionList[i][1] = ' ';
+					}
+				}
+				if (mStepped && i == mActiveInstruction) {
+					ImGui::SetScrollHere(0.25f); // 0.0f:top, 0.5f:center, 1.0f:bottom
+					mStepped = false;
+				}
 			}
 		}
+		ImGui::ListBoxFooter();
 	}
-	ImGui::ListBoxFooter();
 	ImGui::End();
+}
+
+void NesDebugger::CreateInstructionDescription()
+{
+	std::string outString;
+	outString.reserve(30);
+	for (uint16_t i = 0; i < mInstructionList.size(); ++i) {
+		outString.clear();
+		/*
+		if (mInstructionList[i].GetIsBreakpoint()) {
+			outString.append("->");
+		} else {*/
+			outString.append("  ");
+		//}
+		//outString.append(mInstructionList[i].mMemoryLocationBuf);
+		std::stringstream ss;
+		ss << std::hex << std::setw(4) << std::setfill('0') << mInstructionList[i].GetAddress();
+		outString.append(ss.str());
+		outString.append("\t");
+		outString.append(mInstructionList[i].GetOperationName());
+		outString.append("\t");
+		mInstructionList[i].GetArgumentDescription(outString);
+		/*
+		if (ImGui::Selectable(outString.c_str(), i == mActiveInstruction && !mRunning, 0, size))
+		{
+			mInstructionList[i].ToggleIsBreakpoint();
+		}
+		if (mStepped && i == mActiveInstruction) {
+			ImGui::SetScrollHere(0.25f); // 0.0f:top, 0.5f:center, 1.0f:bottom
+			mStepped = false;
+		}*/
+		NesDebugger::mInstructionDescriptionList.push_back(outString);
+	}
 }
 
 void NesDebugger::RenderMemoryWindow()
@@ -242,7 +334,7 @@ void NesDebugger::RenderStackWindow()
 	uint32_t index = 0;
 	char text[5];
 	uint32_t lineLength = 4;
-	for (uint32_t line = 0; line < NesDebugger::mStack.size(); line += lineLength)
+	for (uint32_t line = 0; line < 256; line += lineLength)
 	{
 		ImGui::Text("RAM %04X", line);
 		ImGui::SameLine();
@@ -256,6 +348,27 @@ void NesDebugger::RenderStackWindow()
 	}
 	ImGui::EndGroup();
 	ImGui::End();
+}
+
+void NesDebugger::Init()
+{
+	CreateInstructionDescription();
+	NesDebugger::mStack = mRam.GetRamPtr() + 0x100;
+	mNMIVector = mRam.GetMemoryByLocation(0xFFFB);
+	mNMIVector = mNMIVector << 8;
+	mNMIVector = mNMIVector | mRam.GetMemoryByLocation(0xFFFA);
+
+	mResetVector = mRam.GetMemoryByLocation(0xFFFD);
+	mResetVector = mResetVector << 8;
+	mResetVector = mResetVector | mRam.GetMemoryByLocation(0xFFFC);
+
+	mIRQVector = mRam.GetMemoryByLocation(0xFFFF);
+	mIRQVector = mIRQVector << 8;
+	mIRQVector = mIRQVector | mRam.GetMemoryByLocation(0xFFFE);
+
+	auto result = NesDebugger::sOperations.find(mResetVector);
+	assert(result != NesDebugger::sOperations.end());
+	NesDebugger::mActiveInstruction = result->second;
 }
 
 void NesDebugger::DrawFromBuffer(uint32_t* texArray)

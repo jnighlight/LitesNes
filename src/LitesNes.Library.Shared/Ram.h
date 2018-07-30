@@ -18,6 +18,7 @@ public:
 	uint8_t GetMemoryByLocation(uint16_t memoryLocation);
 	void UpdateCachedRamString();
 	std::string int_to_hex(int i);
+	uint8_t* GetRamPtr() { return mData; };
 
 private:
 	uint32_t rerenderCount = 0;

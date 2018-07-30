@@ -31,6 +31,14 @@ std::vector<OAM::OAMEntry> OAM::GetCollidingSprites(uint32_t lineNum)
 	return collisionSprites;
 }
 
+void OAM::LoadAllOAM(uint8_t inArg)
+{
+	uint16_t offset = inArg;
+	offset = offset << 8;
+	uint8_t* startAddr = NesDebugger::mRam.GetRamPtr() + offset;
+	LoadAllOAM(startAddr);
+}
+
 void OAM::LoadAllOAM(uint8_t* startLoadLocation)
 {
 	for (uint32_t i = 0; i < 64; ++i)
